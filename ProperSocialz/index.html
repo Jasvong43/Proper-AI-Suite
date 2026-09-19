@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProperSocialz — Master Social Media Agent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+        }
+        .neon-border {
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .neon-border:focus-within, .neon-border:hover {
+            border-color: rgba(0, 243, 255, 0.6);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+        .neon-text {
+            color: #00f3ff;
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
+        }
+        .neon-button {
+            background: linear-gradient(45deg, #00f3ff, #00a3ff);
+            color: #020617;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        .neon-button:hover {
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        .glow-dot {
+            animation: pulse-glow 2s infinite;
+        }
+        .report-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+        .report-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+        .calendar-day {
+            aspect-ratio: 1/1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .calendar-day:hover {
+            background: rgba(0, 243, 255, 0.1);
+            border-color: rgba(0, 243, 255, 0.4);
+        }
+        .day-active {
+            border: 1px solid #00f3ff;
+            background: rgba(0, 243, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Background Glows -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-900/20 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-900/20 blur-[120px]"></div>
+    </div>
+
+    <main class="flex-grow flex flex-col items-center px-4 py-12 relative">
+
+        <!-- Auth Loading Overlay -->
+        <div id="authOverlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md">
+            <div class="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin mb-4"></div>
+            <p class="text-cyan-400 font-bold tracking-widest uppercase text-sm animate-pulse" id="authStatus">Authorizing...</p>
+        </div>
+
+        <!-- LOGIN VIEW -->
+        <div id="loginView" class="w-full flex flex-col items-center justify-center">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-widest">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 glow-dot"></span>
+                    Master Social Orchestration
+                </div>
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+                    <span class="text-white">Proper</span><span class="neon-text">Socialz</span>
+                </h1>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                    Omni-channel dominance across all platforms. Let the Master Agent handle the trends, the content, and the scheduling.
+                </p>
+            </div>
+
+            <div class="w-full max-w-md glass p-8 rounded-3xl neon-border">
+                <h2 class="text-2xl font-bold text-center text-white mb-8">Welcome Back</h2>
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                        <input type="email" id="loginEmail" placeholder="name@example.com" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+                        <input type="password" placeholder="••••••••" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                    </div>
+                    <button onclick="handleLogin('Email')" class="w-full neon-button py-3 rounded-xl font-bold text-lg mt-4">Log In</button>
+                </div>
+                <div class="relative mb-6">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
+                    <div class="relative flex justify-center text-xs uppercase"><span class="bg-transparent px-2 text-slate-500 font-medium">Or continue with</span></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="handleLogin('Google')" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                        <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-4 h-4" alt="Google"> Google
+                    </button>
+                    <button onclick="handleLogin('Apple')" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                        <svg class="w-4 h-4 fill-current text-white" viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-54.2 18.4-56.8-18 26.3-46.6 41.2-84.7 42.4-35.5.2-64.3-23.2-84.7-23.2-19.8 0-47.8 22.5-76.3 23.2-31.3.7-60.3-22.2-83.5-44.5-21.3-20.3-38.3-50.4-38.3-82.5 0-33.6 20.3-63.5 54.7-81.5 32.3-16.7 71.4-22.2 105.8-22.2 32.3 0 62.3 16.7 84.7 34.7 22.4 18 36.7 44.5 36.7 75.6 0 34.7-21.3 61.5-54.7 76.3zM256 147.4c-15.4 0-28 11.7-30.6 28.3-12.5 43.5-32.3 75.6-64.3 75.6-32.3 0-57.3-21.3-74.7-47.8-17.4-26.3-26.3-58.3-26.3-90.4 0-33.6 20.3-63.5 54.7-81.5 34.7-18 74.7-18 105.8-18 15.4 0 28 11.7 30.6 28.3 12.5 43.5 32.3 75.6 64.3 75.6 32.3 0 57.3-21.3 74.7-47.8 17.4-26.3 26.3-58.3 26.3-90.4 0-33.6-20.3-63.5-54.7-81.5z"/></svg> Apple
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- APP VIEW -->
+        <div id="appView" class="hidden w-full flex flex-col items-center">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-widest">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 glow-dot"></span>
+                    Master Social Agent
+                </div>
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+                    <span class="text-white">Proper</span><span class="neon-text">Socialz</span>
+                </h1>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                    The ultimate omni-channel command center. Turn one topic into a high-converting cross-platform engine powered by the Master Social Agent.
+                </p>
+            </div>
+
+            <!-- Topic Input Area -->
+            <div class="w-full max-w-2xl glass p-2 rounded-2xl neon-border mb-12">
+                <div class="flex flex-col md:flex-row gap-2">
+                    <input type="text" id="topicInput"
+                        placeholder="Enter topic (e.g. 'The Future of AI Agents', 'Passive Income 2026')..."
+                        class="flex-grow bg-transparent px-4 py-4 outline-none text-slate-200 placeholder-slate-500 text-lg">
+                    <button onclick="generateFullCalendar()" id="genBtn" class="neon-button px-8 py-4 rounded-xl font-bold text-lg transition-all">
+                        Generate Calendar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Master 30-Day Calendar -->
+            <div id="monthlyCalendarView" class="hidden w-full max-w-5xl glass p-8 rounded-3xl neon-border mb-12 report-section">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Monthly Strategic Blueprint
+                    </h2>
+                    <div class="flex gap-2">
+                        <span class="text-xs text-slate-400 uppercase font-bold mr-2">Current Month</span>
+                        <div class="flex gap-1">
+                            <div class="w-3 h-3 rounded-full bg-cyan-500"></div>
+                            <span class="text-[10px] text-slate-400">Scheduled</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-7 gap-2 mb-2 text-center text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                </div>
+                <div id="monthlyGrid" class="calendar-grid">
+                    <!-- 31 Days generated by JS -->
+                </div>
+            </div>
+
+            <!-- 7-Day Weekly Focus -->
+            <div id="weeklyFocusView" class="hidden w-full max-w-5xl glass p-8 rounded-3xl neon-border mb-12 report-section">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                    <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Weekly Tactical Focus
+                </h2>
+                <div id="weeklyGrid" class="grid grid-cols-1 md:grid-cols-7 gap-4">
+                    <!-- 7 Days generated by JS -->
+                </div>
+            </div>
+
+            <!-- Intelligence & Review Row -->
+            <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                <!-- Master Notes Dump -->
+                <div class="glass p-8 rounded-3xl neon-border flex flex-col">
+                    <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <span class="w-2 h-5 bg-cyan-500 rounded-full"></span> Master Notes Dump
+                    </h2>
+                    <p class="text-slate-400 text-sm mb-4">Dump raw ideas, fragments, or thoughts. The Agent will summarize, file, and integrate them into the calendar.</p>
+                    <textarea id="notesDump"
+                        placeholder="Paste raw notes here... (e.g. 'Want to talk about Sora's update next Tuesday', 'Check out that viral reel about productivity')"
+                        class="flex-grow bg-slate-900/50 border border-white/10 rounded-xl p-4 outline-none text-slate-200 min-h-[200px] focus:border-cyan-500/50 transition-all mb-4"></textarea>
+                    <button onclick="processNotes()" class="neon-button py-3 rounded-xl font-bold transition-all">Summarize & File</button>
+                </div>
+
+                <!-- Media Review Hub -->
+                <div class="glass p-8 rounded-3xl neon-border flex flex-col">
+                    <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <span class="w-2 h-5 bg-cyan-500 rounded-full"></span> Media Review Hub
+                    </h2>
+                    <p class="text-slate-400 text-sm mb-4">Add links to videos, images, or articles. The Agent will analyze the hook, style, and virality potential.</p>
+                    <div class="flex gap-2 mb-4">
+                        <input type="text" id="mediaLink"
+                            placeholder="Paste URL (YouTube, TikTok, IG, etc.)..."
+                            class="flex-grow bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                        <button onclick="reviewMedia()" class="neon-button px-6 py-3 rounded-xl font-bold transition-all">Analyze</button>
+                    </div>
+                    <div id="mediaAnalysis" class="bg-slate-900/50 p-4 rounded-xl border border-white/5 text-slate-400 text-sm italic min-h-[100px]">
+                        Waiting for media link...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trend Pulse & Blog Approval -->
+            <div class="w-full max-w-5xl space-y-8 mb-12">
+                <div id="trendHub" class="hidden glass p-8 rounded-3xl neon-border report-section">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Platform Trend Pulse
+                        </h2>
+                        <div class="flex gap-3">
+                            <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded border border-cyan-500/30 uppercase font-bold">Live Trends</span>
+                            <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-1 rounded border border-white/10 uppercase font-bold">Auto-Updating</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass p-6 rounded-2xl border border-white/5">
+                            <h3 class="text-cyan-400 font-bold uppercase text-xs tracking-widest mb-4">Morning Brief</h3>
+                            <div id="morningSummary" class="text-slate-300 text-sm space-y-2 italic">Scanning...</div>
+                        </div>
+                        <div class="glass p-6 rounded-2xl border border-white/5">
+                            <h3 class="text-cyan-400 font-bold uppercase text-xs tracking-widest mb-4">Afternoon Pulse</h3>
+                            <div id="afternoonSummary" class="text-slate-300 text-sm space-y-2 italic">Scanning...</div>
+                        </div>
+                        <div class="glass p-6 rounded-2xl border border-white/5">
+                            <h3 class="text-cyan-400 font-bold uppercase text-xs tracking-widest mb-4">Evening Wrap</h3>
+                            <div id="eveningSummary" class="text-slate-300 text-sm space-y-2 italic">Scanning...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="blogApproval" class="hidden glass p-8 rounded-3xl neon-border report-section">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Evening Compiled Blog
+                        </h2>
+                        <div class="flex gap-3">
+                            <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded border border-cyan-500/30 uppercase font-bold">AI Synthesized</span>
+                            <button onclick="approveAndDistribute()" class="neon-button px-6 py-2 rounded-xl font-bold text-sm">Approve & Distribute</button>
+                        </div>
+                    </div>
+                    <div id="blogContent" class="bg-slate-900/50 p-6 rounded-2xl border border-white/5 text-slate-300 leading-relaxed min-h-[200px] whitespace-pre-wrap">
+                        Generating compiled insights...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Platform Content Grid -->
+            <div id="platformGrid" class="hidden w-full max-w-6xl space-y-8 pb-20 report-section">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                    <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Platform Specific Content
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Cards are the same as before but updated labels -->
+                    <div class="glass p-6 rounded-2xl neon-border flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-white font-bold">Facebook</h3>
+                            <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded border border-cyan-500/30 uppercase font-bold">Scheduled</span>
+                        </div>
+                        <div id="fbContent" class="text-slate-400 text-sm flex-grow mb-4 italic">Pending...</div>
+                        <button class="w-full py-2 rounded-lg bg-white/5 hover:bg-cyan-500/10 border border-white/10 text-slate-400 hover:text-cyan-400 text-xs font-semibold transition-all">Review & Edit</button>
+                    </div>
+                    <div class="glass p-6 rounded-2xl neon-border flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-white font-bold">Instagram</h3>
+                            <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded border border-cyan-500/30 uppercase font-bold">Scheduled</span>
+                        </div>
+                        <div id="igContent" class="text-slate-400 text-sm flex-grow mb-4 italic">Pending...</div>
+                        <button class="w-full py-2 rounded-lg bg-white/5 hover:bg-cyan-500/10 border border-white/10 text-slate-400 hover:text-cyan-400 text-xs font-semibold transition-all">Review & Edit</button>
+                    </div>
+                    <div class="glass p-6 rounded-2xl neon-border flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-white font-bold">X (Twitter)</h3>
+                            <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded border border-cyan-500/30 uppercase font-bold">Scheduled</span>
+                        </div>
+                        <div id="xContent" class="text-slate-400 text-sm flex-grow mb-4 italic">Pending...</div>
+                        <button class="w-full py-2 rounded-lg bg-white/5 hover:bg-cyan-500/10 border border-white/10 text-slate-400 hover:text-cyan-400 text-xs font-semibold transition-all">Review & Edit</button>
+                    </div>
+                    <div class="glass p-6 rounded-2xl neon-border flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-white font-bold">TikTok</h3>
+                            <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded border border-cyan-500/30 uppercase font-bold">Scheduled</span>
+                        </div>
+                        <div id="ttContent" class="text-slate-400 text-sm flex-grow mb-4 italic">Pending...</div>
+                        <button class="w-full py-2 rounded-lg bg-white/5 hover:bg-cyan-500/10 border border-white/10 text-slate-400 hover:text-cyan-400 text-xs font-semibold transition-all">Review & Edit</button>
+                    </div>
+                    <div class="glass p-6 rounded-2xl neon-border flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-white font-bold">LinkedIn</h3>
+                            <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded border border-cyan-500/30 uppercase font-bold">Scheduled</span>
+                        </div>
+                        <div id="liContent" class="text-slate-400 text-sm flex-grow mb-4 italic">Pending...</div>
+                        <button class="w-full py-2 rounded-lg bg-white/5 hover:bg-cyan-500/10 border border-white/10 text-slate-400 hover:text-cyan-400 text-xs font-semibold transition-all">Review & Edit</button>
+                    </div>
+                    <div class="glass p-6 rounded-2xl neon-border flex flex-col">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-white font-bold">Reddit</h3>
+                            <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded border border-cyan-500/30 uppercase font-bold">Scheduled</span>
+                        </div>
+                        <div id="rdContent" class="text-slate-400 text-sm flex-grow mb-4 italic">Pending...</div>
+                        <button class="w-full py-2 rounded-lg bg-white/5 hover:bg-cyan-500/10 border border-white/10 text-slate-400 hover:text-cyan-400 text-xs font-semibold transition-all">Review & Edit</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="hidden flex flex-col items-center gap-4 mb-20">
+                <div class="w-12 h-12 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
+                <p class="text-slate-400 animate-pulse" id="loadingText">Consulting Master Agent...</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-6 px-4 border-t border-white/5 glass text-center">
+        <p class="text-sm text-slate-500 font-medium">
+            Need help? <a href="mailto:support@propersocialz.com" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors">support@propersocialz.com</a>
+            <span class="mx-3 text-slate-700">·</span>
+            Developed by <a href="#" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors">ProperSocialz Team</a>
+        </p>
+    </footer>
+
+    <script>
+        const userDb = { emails: [] };
+
+        async function handleLogin(provider = 'Email') {
+            const emailInput = document.getElementById('loginEmail');
+            const email = emailInput ? emailInput.value.trim() : '';
+            if (provider === 'Email' && !email) { alert('Please enter your email.'); return; }
+            if (email && !userDb.emails.includes(email)) userDb.emails.push(email);
+
+            const overlay = document.getElementById('authOverlay');
+            const statusText = document.getElementById('authStatus');
+            overlay.classList.remove('hidden');
+
+            try {
+                statusText.innerText = 'Authorizing...';
+                await new Promise(r => setTimeout(r, 800));
+                statusText.innerText = 'Verifying...';
+                await new Promise(r => setTimeout(r, 600));
+                overlay.classList.add('hidden');
+                document.getElementById('loginView').classList.add('hidden');
+                document.getElementById('appView').classList.remove('hidden');
+            } catch (e) {
+                overlay.classList.add('hidden');
+                alert('Login failed.');
+            }
+        }
+
+        function renderMonthlyCalendar() {
+            const grid = document.getElementById('monthlyGrid');
+            grid.innerHTML = '';
+            for (let i = 1; i <= 31; i++) {
+                const day = document.createElement('div');
+                day.className = `calendar-day glass neon-border ${i === 15 ? 'day-active' : ''}`;
+                day.innerHTML = `
+                    <span class="font-bold text-white">${i}</span>
+                    <span class="text-[8px] text-cyan-400 truncate w-full text-center">${i % 3 === 0 ? 'Post' : i % 5 === 0 ? 'Story' : ''}</span>
+                `;
+                day.onclick = () => alert(`Viewing planned content for Day ${i}`);
+                grid.appendChild(day);
+            }
+        }
+
+        function renderWeeklyCalendar() {
+            const grid = document.getElementById('weeklyGrid');
+            grid.innerHTML = '';
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            days.forEach(day => {
+                const div = document.createElement('div');
+                div.className = 'glass p-4 rounded-2xl neon-border flex flex-col items-center text-center';
+                div.innerHTML = `
+                    <span class="text-xs font-bold text-slate-500 uppercase mb-2">${day}</span>
+                    <div class="text-xs text-slate-300 italic mb-2">Strategy: Growth</div>
+                    <div class="w-full h-1 bg-cyan-500/20 rounded-full overflow-hidden">
+                        <div class="bg-cyan-400 h-full" style="width: 60%"></div>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        async function generateFullCalendar() {
+            const input = document.getElementById('topicInput');
+            const btn = document.getElementById('genBtn');
+            const loading = document.getElementById('loadingState');
+            const loadingText = document.getElementById('loadingText');
+
+            if (!input.value.trim()) { alert('Please enter a topic first!'); return; }
+
+            btn.disabled = true;
+            btn.innerText = 'Architecting...';
+            loading.classList.remove('hidden');
+
+            const topic = input.value.trim();
+            const steps = ["Mapping monthly blueprint...", "Developing weekly strategy...", "Optimizing for 7 platforms...", "Analyzing trend pulses..."];
+
+            for (let step of steps) {
+                loadingText.innerText = step;
+                await new Promise(r => setTimeout(r, 800));
+            }
+
+            // Show all sections
+            document.getElementById('monthlyCalendarView').classList.remove('hidden');
+            document.getElementById('weeklyFocusView').classList.remove('hidden');
+            document.getElementById('trendHub').classList.remove('hidden');
+            document.getElementById('blogApproval').classList.remove('hidden');
+            document.getElementById('platformGrid').classList.remove('hidden');
+
+            renderMonthlyCalendar();
+            renderWeeklyCalendar();
+
+            // Fill Trends
+            document.getElementById('morningSummary').innerText = `Morning Pulse: ${topic} is spiking on X and TikTok. High engagement on 'How-to' style clips.`;
+            document.getElementById('afternoonSummary').innerText = `Afternoon Pulse: LinkedIn is reacting well to professional takes on ${topic}. Reddit threads are debating the ethics.`;
+            document.getElementById('eveningSummary').innerText = `Evening Wrap: Massive trend surge for ${topic} on Instagram Reels. Ready for compilation.`;
+
+            // Fill Blog
+            document.getElementById('blogContent').innerText = `MASTER INSIGHTS: ${topic.toUpperCase()}\n\nToday's analysis shows a significant shift in how audiences are consuming ${topic}. On X, the conversation is driven by rapid-fire takes, while LinkedIn prefers deep-dives. \n\nKey takeaway: The most viral angle is combining the efficiency of ${topic} with a human-centric storytelling approach...`;
+
+            // Fill Platforms
+            document.getElementById('fbContent').innerText = `Post: Ever wondered how ${topic} changes everything? Check out our latest guide. #ProperSocialz #${topic.replace(/\s+/g, '')}`;
+            document.getElementById('igContent').innerText = `Reel Concept: Fast cuts showing the transformation of ${topic}. Captions: "The secret to ${topic} revealed" ✨`;
+            document.getElementById('xContent').innerText = `Thread: 1/5 Why ${topic} is the most important trend of 2026. 🧵 #AI #Trends`;
+            document.getElementById('ttContent').innerText = `TikTok: POV: You just discovered the master secret to ${topic}. [Trending Sound: Synthwave]`;
+            document.getElementById('liContent').innerText = `Article: The Professional's Guide to ${topic} in the Enterprise Space. A deep dive into ROI and scalability.`;
+            document.getElementById('rdContent').innerText = `Post r/Technology: Unpopular opinion: ${topic} is being overrated, but here is the one part that actually works...`;
+
+            // Trigger fade-in animations
+            const sections = ['monthlyCalendarView', 'weeklyFocusView', 'trendHub', 'blogApproval', 'platformGrid'];
+            sections.forEach((id, i) => {
+                setTimeout(() => document.getElementById(id)?.classList.add('visible'), i * 200);
+            });
+
+            loading.classList.add('hidden');
+            btn.disabled = false;
+            btn.innerText = 'Generate Calendar';
+        }
+
+        async function processNotes() {
+            const notes = document.getElementById('notesDump').value;
+            if (!notes.trim()) { alert('Please enter some notes first!'); return; }
+
+            const btn = event.target;
+            btn.disabled = true;
+            btn.innerText = 'Analyzing...';
+
+            await new Promise(r => setTimeout(r, 1500));
+            alert('Master Agent has processed your notes. New strategic pillars have been added to the Monthly Calendar.');
+
+            btn.disabled = false;
+            btn.innerText = 'Summarize & File';
+        }
+
+        async function reviewMedia() {
+            const link = document.getElementById('mediaLink').value;
+            if (!link.trim()) { alert('Please provide a link!'); return; }
+
+            const analysisDiv = document.getElementById('mediaAnalysis');
+            analysisDiv.innerText = 'Analyzing media patterns...';
+
+            await new Promise(r => setTimeout(r, 2000));
+            analysisDiv.innerText = `Analysis Complete: The link provided uses a "High-Contrast Loop" pattern. Suggesting integration into Day 12 (Reels) and Day 15 (TikTok) for maximum impact.`;
+        }
+
+        function approveAndDistribute() {
+            alert('Blog approved! Content has been scheduled for tomorrow morning and distributed to all platforms for final review.');
+        }
+    </script>
+</body>
+</html>

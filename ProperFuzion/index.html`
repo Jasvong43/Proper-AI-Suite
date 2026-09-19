@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProperFuzion — AI Video Producer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+        .neon-border {
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .neon-border:focus-within, .neon-border:hover {
+            border-color: rgba(0, 243, 255, 0.6);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+        .neon-text {
+            color: #00f3ff;
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
+        }
+        .neon-button {
+            background: linear-gradient(45deg, #00f3ff, #00a3ff);
+            color: #020617;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        .neon-button:hover {
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        .glow-dot {
+            animation: pulse-glow 2s infinite;
+        }
+        .timeline-clip {
+            background: linear-gradient(to bottom, #00f3ff, #0066ff);
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .timeline-clip:hover {
+            filter: brightness(1.2);
+            transform: scaleY(1.1);
+        }
+        .report-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+        .report-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Background Glows -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-900/20 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-900/20 blur-[120px]"></div>
+    </div>
+
+    <!-- Auth Loading Overlay -->
+    <div id="authOverlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md">
+        <div class="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin mb-4"></div>
+        <p class="text-cyan-400 font-bold tracking-widest uppercase text-sm animate-pulse" id="authStatus">Authorizing...</p>
+    </div>
+
+    <!-- LOGIN VIEW -->
+    <div id="loginView" class="min-h-screen w-full flex flex-col items-center justify-center px-4">
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-widest">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 glow-dot"></span>
+                AI Video Production
+            </div>
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+                <span class="text-white">Proper</span><span class="neon-text">Fuzion</span>
+            </h1>
+            <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                Professional-grade video editing powered by a Master AI Director & Producer. Automate your cuts, match viral music, and optimize for YouTube growth.
+            </p>
+        </div>
+
+        <div class="w-full max-w-md glass p-8 rounded-3xl neon-border">
+            <h2 class="text-2xl font-bold text-center text-white mb-8">Welcome Back</h2>
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="name@example.com" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+                    <input type="password" placeholder="••••••••" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                </div>
+                <button id="emailLoginBtn" class="w-full neon-button py-3 rounded-xl font-bold text-lg mt-4">Log In</button>
+            </div>
+            <div class="relative mb-6">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
+                <div class="relative flex justify-center text-xs uppercase"><span class="bg-transparent px-2 text-slate-500 font-medium">Or continue with</span></div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <button id="googleLoginBtn" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                    <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-4 h-4" alt="Google"> Google
+                </button>
+                <button id="appleLoginBtn" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                    <svg class="w-4 h-4 fill-current text-white" viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-54.2 18.4-56.8-18 26.3-46.6 41.2-84.7 42.4-35.5.2-64.3-23.2-84.7-23.2-19.8 0-47.8 22.5-76.3 23.2-31.3.7-60.3-22.2-83.5-44.5-21.3-20.3-38.3-50.4-38.3-82.5 0-33.6 20.3-63.5 54.7-81.5 32.3-16.7 71.4-22.2 105.8-22.2 32.3 0 62.3 16.7 84.7 34.7 22.4 18 36.7 44.5 36.7 75.6 0 34.7-21.3 61.5-54.7 76.3zM256 147.4c-15.4 0-28 11.7-30.6 28.3-12.5 43.5-32.3 75.6-64.3 75.6-32.3 0-57.3-21.3-74.7-47.8-17.4-26.3-26.3-58.3-26.3-90.4 0-33.6 20.3-63.5 54.7-81.5 34.7-18 74.7-18 105.8-18 15.4 0 28 11.7 30.6 28.3 12.5 43.5 32.3 75.6 64.3 75.6 32.3 0 57.3-21.3 74.7-47.8 17.4-26.3 26.3-58.3 26.3-90.4 0-33.6-20.3-63.5-54.7-81.5z"/></svg> Apple
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- APP VIEW -->
+        <div id="appView" class="hidden min-h-screen w-full flex flex-col items-center p-8 space-y-8 overflow-y-auto">
+            <!-- Centered Branding Header -->
+            <div class="text-center py-8">
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+                    <span class="text-white">Proper</span><span class="neon-text">Fuzion</span>
+                </h1>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                    Professional-grade video editing powered by a Master AI Director & Producer. Automate your cuts, match viral music, and optimize for YouTube growth.
+                </p>
+            </div>
+
+            <!-- Rectangle 1: Preview & Timeline -->
+            <div class="w-full max-w-6xl space-y-6 report-section">
+                <div class="glass rounded-3xl border border-white/10 relative flex items-center justify-center overflow-hidden aspect-video group">
+                    <div id="playerPlaceholder" class="text-center p-12">
+                        <svg class="w-20 h-20 text-slate-700 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                        <p class="text-slate-500 font-medium">Playback Preview</p>
+                    </div>
+                    <!-- Player Controls -->
+                    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button class="p-2 bg-white/10 rounded-full hover:bg-white/20 text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg></button>
+                    </div>
+                    <!-- Top Right Actions -->
+                    <div class="absolute top-6 right-6 flex gap-3">
+                        <button onclick="saveProject()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs font-bold transition-all">Save Project</button>
+                        <button onclick="requestExport()" class="px-4 py-2 rounded-xl neon-button text-slate-900 text-xs font-bold transition-all">Export Video</button>
+                    </div>
+                </div>
+                <div class="w-full glass rounded-3xl neon-border p-4 flex flex-col">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Timeline Strip</span>
+                        <span id="timelineClock" class="text-[10px] text-cyan-400 font-mono">00:00:00 / 00:05:00</span>
+                    </div>
+                    <div id="timeline" class="h-20 bg-slate-900/50 rounded-xl border border-white/5 flex items-center gap-1 p-2 overflow-x-auto relative">
+                        <!-- Timeline clips injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rectangle 2: Production Hub -->
+            <div class="w-full max-w-7xl glass p-8 rounded-3xl neon-border grid grid-cols-1 lg:grid-cols-10 gap-8 report-section">
+                <!-- LEFT: Video Assets (30%) -->
+                <div class="lg:col-span-3 flex flex-col h-[400px]">
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        Video Assets
+                    </h3>
+                    <div id="assetList" class="flex-grow overflow-y-auto space-y-3">
+                        <div class="p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-all text-xs text-slate-400 flex items-center gap-3" onclick="addToTimeline('clip_1')">
+                            <div class="w-12 h-8 bg-slate-800 rounded overflow-hidden"></div>
+                            <span>b-roll_sunset.mp4</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-all text-xs text-slate-400 flex items-center gap-3" onclick="addToTimeline('clip_2')">
+                            <div class="w-12 h-8 bg-slate-800 rounded overflow-hidden"></div>
+                            <span>talking_head_main.mp4</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-all text-xs text-slate-400 flex items-center gap-3" onclick="addToTimeline('clip_3')">
+                            <div class="w-12 h-8 bg-slate-800 rounded overflow-hidden"></div>
+                            <span>product_shot_01.mp4</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CENTER: AI Director (40%) -->
+                <div class="lg:col-span-4 flex flex-col h-[400px]">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            AI Director
+                        </h3>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-slate-500 uppercase font-bold">Full Control</span>
+                            <input type="checkbox" id="aiFullControl" class="w-4 h-4 accent-cyan-500 rounded cursor-pointer">
+                        </div>
+                    </div>
+                    <div id="directorStats" class="hidden mb-4 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex justify-between items-center">
+                        <span class="text-xs text-cyan-400 font-bold uppercase">Viral Potential:</span>
+                        <span id="viralityScore" class="text-xl font-extrabold neon-text">0/100</span>
+                    </div>
+                    <textarea id="aiPrompt" placeholder="Tell the Producer how to edit this video..." class="flex-grow bg-slate-900/50 border border-white/10 rounded-xl p-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all resize-none text-sm mb-4"></textarea>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="handleAIEditing()" class="neon-button py-3 rounded-xl font-bold text-sm">Execute AI Edit</button>
+                        <button onclick="scanForViralClips()" class="bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl font-bold text-sm text-slate-300 transition-all">Scan Viral Clips</button>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-white/10 flex gap-2">
+                        <input type="text" id="campaignInput" placeholder="Campaign Name (e.g. Summer Growth)" class="flex-grow bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-xs outline-none text-slate-300">
+                        <button onclick="rememberCampaign()" class="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-cyan-400 px-3 py-2 rounded-lg text-[10px] font-bold uppercase">Set Campaign</button>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Editing Tools (30%) -->
+                <div class="lg:col-span-3 flex flex-col space-y-4 h-[400px] overflow-y-auto pr-2">
+                    <h3 class="text-lg font-bold text-white mb-2">Production Tools</h3>
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Voice-over / Video EQ</label>
+                        <select class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 outline-none text-slate-300 text-sm focus:border-cyan-500/50 transition-all">
+                            <option>Default Mix</option>
+                            <option>Deep Bass Boost</option>
+                            <option>Crisp Dialogue</option>
+                            <option>Cinematic Atmos</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Captions</label>
+                        <select class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 outline-none text-slate-300 text-sm focus:border-cyan-500/50 transition-all">
+                            <option>None</option>
+                            <option>Dynamic (Pop-up)</option>
+                            <option>Minimalist Bottom</option>
+                            <option>High-Contrast Bold</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Transitions</label>
+                        <select class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 outline-none text-slate-300 text-sm focus:border-cyan-500/50 transition-all">
+                            <option>Cut</option>
+                            <option>Cross-Fade</option>
+                            <option>Glitch Warp</option>
+                            <option>Smooth Zoom</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Fonts</label>
+                        <select class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 outline-none text-slate-300 text-sm focus:border-cyan-500/50 transition-all">
+                            <option>Inter (Standard)</option>
+                            <option>Montserrat Bold</option>
+                            <option>Bebas Neue</option>
+                            <option>Playfair Display</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Non-Copyright Music</label>
+                        <select class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 outline-none text-slate-300 text-sm focus:border-cyan-500/50 transition-all">
+                            <option>Select Track...</option>
+                            <option>Lo-Fi Study Beats</option>
+                            <option>Cinematic Orchestral</option>
+                            <option>Phonk Aggressive</option>
+                            <option>Corporate Minimal</option>
+                            <option>Ambient Zen</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Profile / Footer Info -->
+            <div class="w-full max-w-xs flex items-center gap-3 p-3 rounded-2xl bg-slate-900/50 border border-white/5 mb-12">
+                <div class="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center text-slate-900 font-bold text-xs">JS</div>
+                <div class="overflow-hidden">
+                    <p class="text-xs font-bold text-white truncate">jsmit@proper.ai</p>
+                    <p class="text-[10px] text-slate-500">Pro Plan</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Review Modal -->
+        <div id="reviewModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md">
+            <div class="w-full max-w-md glass p-8 rounded-3xl neon-border text-center">
+                <h2 class="text-2xl font-bold text-white mb-4">Review Required</h2>
+                <p id="reviewMessage" class="text-slate-400 mb-8">The AI Producer has finished the edits. Please review the timeline before exporting.</p>
+                <div class="flex gap-4">
+                    <button onclick="closeReview()" class="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-slate-300 font-bold">Go Back</button>
+                    <button onclick="finalizeExport()" class="flex-1 neon-button py-3 rounded-xl font-bold">Approve & Export</button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="py-3 px-4 border-t border-white/5 glass text-center">
+            <p class="text-xs text-slate-500 font-medium">
+                Need help? <a href="mailto:support@properfuzion.com" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors">support@properfuzion.com</a>
+                <span class="mx-3 text-slate-700">·</span>
+                Developed by <a href="#" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors">ProperFuzion Team</a>
+            </p>
+        </footer>
+
+        <script>
+            const userDb = { emails: [] };
+            let timeline = [];
+            let editedByAI = false;
+            let campaignMemory = null;
+
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('emailLoginBtn').addEventListener('click', () => handleLogin('Email'));
+                document.getElementById('googleLoginBtn').addEventListener('click', () => handleLogin('Google'));
+                document.getElementById('appleLoginBtn').addEventListener('click', () => handleLogin('Apple'));
+            });
+
+            function rememberCampaign() {
+                const name = document.getElementById('campaignInput').value.trim();
+                if (!name) { alert('Please enter a campaign name!'); return; }
+                campaignMemory = name;
+                alert(`AI Director has memorized the "${name}" campaign. All future viral scans will be optimized for this target.`);
+            }
+
+            function handleLogin(provider = 'Email') {
+                const emailInput = document.getElementById('loginEmail');
+                const email = emailInput ? emailInput.value.trim() : '';
+                if (provider === 'Email' && !email) { alert('Please enter your email to continue.'); return; }
+                if (email && !userDb.emails.includes(email)) { userDb.emails.push(email); }
+                const overlay = document.getElementById('authOverlay');
+                const statusText = document.getElementById('authStatus');
+                overlay.classList.remove('hidden');
+                statusText.innerText = `Authorizing with ${provider}...`;
+                setTimeout(() => {
+                    statusText.innerText = 'Verifying Credentials...';
+                    setTimeout(() => {
+                        statusText.innerText = 'Finalizing Session...';
+                        setTimeout(() => {
+                            overlay.classList.add('hidden');
+                            document.getElementById('loginView').classList.add('hidden');
+                            document.getElementById('appView').classList.remove('hidden');
+
+                            setTimeout(() => {
+                                const sections = ['appView'].concat(Array.from(document.querySelectorAll('.report-section')).map(s => s.id).filter(Boolean));
+                                sections.forEach((id, i) => {
+                                    const el = document.getElementById(id);
+                                    if (el) setTimeout(() => el.classList.add('visible'), i * 200);
+                                });
+                            }, 100);
+                        }, 500);
+                    }, 800);
+                }, 1000);
+            }
+
+            function addToTimeline(assetId) {
+                timeline.push(assetId);
+                renderTimeline();
+            }
+
+            function renderTimeline() {
+                const container = document.getElementById('timeline');
+                container.innerHTML = '';
+                timeline.forEach((id, index) => {
+                    const clip = document.createElement('div');
+                    clip.className = 'timeline-clip h-full rounded-sm min-w-[60px]';
+                    clip.style.width = (Math.random() * 100 + 50) + 'px';
+                    clip.title = id;
+                    container.appendChild(clip);
+                });
+                document.getElementById('timelineClock').innerText = `00:00:${timeline.length * 2} / 00:05:00`;
+            }
+
+            async function handleAIEditing() {
+                const prompt = document.getElementById('aiPrompt').value;
+                const fullControl = document.getElementById('aiFullControl').checked;
+
+                if (!prompt) { alert('Please provide directions for the AI Director!'); return; }
+
+                const overlay = document.getElementById('authOverlay');
+                const statusText = document.getElementById('authStatus');
+                overlay.classList.remove('hidden');
+
+                statusText.innerText = 'AI Director Analyzing Footage...';
+                await new Promise(r => setTimeout(r, 1500));
+
+                if (fullControl) {
+                    statusText.innerText = 'Executing Full-Scale Production Edit...';
+                    await new Promise(r => setTimeout(r, 2000));
+                    statusText.innerText = 'Optimizing Cuts & Pacing...';
+                    await new Promise(r => setTimeout(r, 1500));
+                } else {
+                    statusText.innerText = 'Suggesting Edits (Review Required)...';
+                    await new Promise(r => setTimeout(r, 1500));
+                }
+
+                statusText.innerText = 'Matching Perfect Soundtrack from Library...';
+                await new Promise(r => setTimeout(r, 1500));
+                statusText.innerText = 'Finalizing Master Cut...';
+                await new Promise(r => setTimeout(r, 1000));
+
+                overlay.classList.add('hidden');
+                timeline = ['clip_1', 'clip_3', 'clip_2', 'clip_1'];
+                renderTimeline();
+
+                const musicSelect = document.querySelectorAll('select')[4];
+                if (musicSelect) musicSelect.selectedIndex = Math.floor(Math.random() * 5) + 1;
+
+                editedByAI = true;
+                const reviewFeedback = "AI Director Review: The pacing is tight and the music matches the energy. Recommend adding high-contrast captions for the bridge segment.";
+                alert(reviewFeedback);
+            }
+
+            async function scanForViralClips() {
+                const prompt = document.getElementById('aiPrompt').value;
+                if (!prompt) { alert('Please upload a long-form video or provide a link first!'); return; }
+
+                const overlay = document.getElementById('authOverlay');
+                const statusText = document.getElementById('authStatus');
+                overlay.classList.remove('hidden');
+                statusText.innerText = 'Scanning long-form content for viral spikes...';
+                await new Promise(r => setTimeout(r, 2000));
+                statusText.innerText = 'Ranking clips by viral potential (1-100)...';
+                await new Promise(r => setTimeout(r, 2000));
+                overlay.classList.add('hidden');
+
+                const clips = [
+                    { time: '01:12', score: 94, hook: 'High energy peak' },
+                    { time: '04:45', score: 88, hook: 'Controversial statement' },
+                    { time: '08:20', score: 72, hook: 'Emotional resolution' }
+                ];
+
+                let resultMsg = "Whop Clipping Mogul Analysis:\n\n";
+                clips.forEach(c => resultMsg += `Clip at ${c.time} - Score: ${c.score}/100 (${c.hook})\n`);
+                resultMsg += "\nRecommendation: Use Clip 1 for the primary ad campaign.";
+                alert(resultMsg);
+            }
+
+            function calculateVirality() {
+                const score = Math.floor(Math.random() * 30) + 70;
+                document.getElementById('directorStats').classList.remove('hidden');
+                document.getElementById('viralityScore').innerText = `${score}/100`;
+            }
+
+            function requestExport() {
+                if (timeline.length === 0) { alert('Add some clips to the timeline first!'); return; }
+                calculateVirality();
+                const modal = document.getElementById('reviewModal');
+                const msg = document.getElementById('reviewMessage');
+
+                if (editedByAI) {
+                    msg.innerText = 'The AI Director performed these edits. Human review is REQUIRED before this video can be exported.';
+                    modal.classList.remove('hidden');
+                } else {
+                    msg.innerText = 'You have finished your human edits. Would you like the AI Producer to review and polish them before exporting?';
+                    modal.classList.remove('hidden');
+                }
+            }
+
+            function saveProject() {
+                alert('Project saved successfully to your cloud storage!');
+            }
+
+            function closeReview() {
+                document.getElementById('reviewModal').classList.add('hidden');
+            }
+
+            function finalizeExport() {
+                alert('Exporting high-resolution master file... \n\nRendering complete! Your video is ready.');
+                closeReview();
+            }
+        </script>
+</body>
+</html>

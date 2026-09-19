@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProperStory — Viral Script Architect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+        }
+        .neon-border {
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .neon-border:focus-within, .neon-border:hover {
+            border-color: rgba(0, 243, 255, 0.6);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+        .neon-text {
+            color: #00f3ff;
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
+        }
+        .neon-button {
+            background: linear-gradient(45deg, #00f3ff, #00a3ff);
+            color: #020617;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        .neon-button:hover {
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .step-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        .glow-dot {
+            animation: pulse-glow 2s infinite;
+        }
+        .final-packet {
+            background: white;
+            color: #0f172a;
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Background Glows -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-900/20 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-900/20 blur-[120px]"></div>
+    </div>
+
+    <main class="flex-grow flex flex-col items-center justify-center px-4 py-12 relative">
+
+        <!-- Auth Loading Overlay -->
+        <div id="authOverlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md">
+            <div class="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin mb-4"></div>
+            <p class="text-cyan-400 font-bold tracking-widest uppercase text-sm animate-pulse" id="authStatus">Authorizing...</p>
+        </div>
+
+        <!-- LOGIN VIEW -->
+        <div id="loginView" class="w-full flex flex-col items-center justify-center">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-widest">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 glow-dot"></span>
+                    Viral Script Architecture
+                </div>
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+                    <span class="text-white">Proper</span><span class="neon-text">Story</span>
+                </h1>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                    Transform viral ideas into high-retention scripts. Full storyboarding, visual prompting, and VO timing.
+                </p>
+            </div>
+
+            <div class="w-full max-w-md glass p-8 rounded-3xl neon-border">
+                <h2 class="text-2xl font-bold text-center text-white mb-8">Welcome Back</h2>
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                        <input type="email" placeholder="name@example.com" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+                        <input type="password" placeholder="••••••••" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                    </div>
+                    <button onclick="handleLogin()" class="w-full neon-button py-3 rounded-xl font-bold text-lg mt-4">Log In</button>
+                </div>
+                <div class="relative mb-6">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
+                    <div class="relative flex justify-center text-xs uppercase"><span class="bg-transparent px-2 text-slate-500 font-medium">Or continue with</span></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="handleLogin('Google')" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                        <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-4 h-4" alt="Google"> Google
+                    </button>
+                    <button onclick="handleLogin('Apple')" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                        <svg class="w-4 h-4 fill-current text-white" viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-54.2 18.4-56.8-18 26.3-46.6 41.2-84.7 42.4-35.5.2-64.3-23.2-84.7-23.2-19.8 0-47.8 22.5-76.3 23.2-31.3.7-60.3-22.2-83.5-44.5-21.3-20.3-38.3-50.4-38.3-82.5 0-33.6 20.3-63.5 54.7-81.5 32.3-16.7 71.4-22.2 105.8-22.2 32.3 0 62.3 16.7 84.7 34.7 22.4 18 36.7 44.5 36.7 75.6 0 34.7-21.3 61.5-54.7 76.3zM256 147.4c-15.4 0-28 11.7-30.6 28.3-12.5 43.5-32.3 75.6-64.3 75.6-32.3 0-57.3-21.3-74.7-47.8-17.4-26.3-26.3-58.3-26.3-90.4 0-33.6 20.3-63.5 54.7-81.5 34.7-18 74.7-18 105.8-18 15.4 0 28 11.7 30.6 28.3 12.5 43.5 32.3 75.6 64.3 75.6 32.3 0 57.3-21.3 74.7-47.8 17.4-26.3 26.3-58.3 26.3-90.4 0-33.6-20.3-63.5-54.7-81.5z"/></svg> Apple
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- APP VIEW -->
+        <div id="appView" class="hidden w-full flex flex-col items-center">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-widest">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 glow-dot"></span>
+                    Script Architecture Workflow
+                </div>
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+                    <span class="text-white">Proper</span><span class="neon-text">Story</span>
+                </h1>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                    Convert viral titles into polished high-retention scripts.
+                </p>
+            </div>
+
+            <!-- Workflow Step Container -->
+            <div id="stepContainer" class="w-full max-w-4xl glass p-8 rounded-3xl neon-border mb-12">
+                <!-- Step 0: Entry -->
+                <div id="step0" class="workflow-step flex flex-col items-center text-center">
+                    <h2 class="text-2xl font-bold text-white mb-6">Start Your Story</h2>
+                    <div class="w-full max-w-lg space-y-4">
+                        <input type="text" id="storyInput" placeholder="Enter Viral Title or Niche..." class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-4 outline-none text-slate-200 focus:border-cyan-500/50 transition-all text-lg">
+                        <button onclick="nextStep(1)" class="w-full neon-button py-4 rounded-xl font-bold text-lg">Generate First Draft</button>
+                    </div>
+                </div>
+
+                <!-- Step 1: Script Draft -->
+                <div id="step1" class="workflow-step hidden flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white">Step 1: Script Draft</h2>
+                        <span class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold">AI Generating...</span>
+                    </div>
+                    <textarea id="scriptArea" class="w-full h-64 bg-slate-900/50 border border-white/10 rounded-xl p-4 outline-none text-slate-300 focus:border-cyan-500/50 transition-all mb-6" placeholder="AI is writing your script..."></textarea>
+                    <div class="flex gap-4">
+                        <button onclick="prevStep(0)" class="flex-1 py-3 rounded-xl bg-white/5 text-slate-400 font-semibold hover:bg-white/10 transition-all">Back</button>
+                        <button onclick="nextStep(2)" class="flex-1 neon-button py-3 rounded-xl font-bold text-slate-900">Approve Script</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Scenes Draft -->
+                <div id="step2" class="workflow-step hidden flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white">Step 2: Storyboard Scenes</h2>
+                        <span class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold">AI Generating...</span>
+                    </div>
+                    <textarea id="scenesArea" class="w-full h-64 bg-slate-900/50 border border-white/10 rounded-xl p-4 outline-none text-slate-300 focus:border-cyan-500/50 transition-all mb-6" placeholder="AI is mapping out your scenes..."></textarea>
+                    <div class="flex gap-4">
+                        <button onclick="prevStep(1)" class="flex-1 py-3 rounded-xl bg-white/5 text-slate-400 font-semibold hover:bg-white/10 transition-all">Back</button>
+                        <button onclick="nextStep(3)" class="flex-1 neon-button py-3 rounded-xl font-bold text-slate-900">Approve Scenes</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: VO Timing -->
+                <div id="step3" class="workflow-step hidden flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white">Step 3: Voice Over Timing</h2>
+                        <span class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold">AI Generating...</span>
+                    </div>
+                    <textarea id="voArea" class="w-full h-64 bg-slate-900/50 border border-white/10 rounded-xl p-4 outline-none text-slate-300 focus:border-cyan-500/50 transition-all mb-6" placeholder="AI is timing your delivery..."></textarea>
+                    <div class="flex gap-4">
+                        <button onclick="prevStep(2)" class="flex-1 py-3 rounded-xl bg-white/5 text-slate-400 font-semibold hover:bg-white/10 transition-all">Back</button>
+                        <button onclick="nextStep(4)" class="flex-1 neon-button py-3 rounded-xl font-bold text-slate-900">Approve Timing</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Prompt Creation -->
+                <div id="step4" class="workflow-step hidden flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white">Step 4: Visual Prompting</h2>
+                        <span class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold">AI Generating...</span>
+                    </div>
+                    <textarea id="promptArea" class="w-full h-64 bg-slate-900/50 border border-white/10 rounded-xl p-4 outline-none text-slate-300 focus:border-cyan-500/50 transition-all mb-6" placeholder="AI is creating image and video prompts..."></textarea>
+                    <div class="flex gap-4">
+                        <button onclick="prevStep(3)" class="flex-1 py-3 rounded-xl bg-white/5 text-slate-400 font-semibold hover:bg-white/10 transition-all">Back</button>
+                        <button onclick="nextStep(5)" class="flex-1 neon-button py-3 rounded-xl font-bold text-slate-900">Finalize Packet</button>
+                    </div>
+                </div>
+
+                <!-- Step 5: Final Delivery -->
+                <div id="step5" class="workflow-step hidden flex flex-col">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-white mb-2">Final Polish Complete</h2>
+                        <p class="text-slate-400">Your complete viral production packet is ready.</p>
+                    </div>
+                    <div id="finalPacket" class="final-packet p-8 rounded-lg shadow-2xl text-left mb-8 overflow-y-auto max-h-[600px]">
+                        <!-- Final content injected here -->
+                    </div>
+                    <button onclick="downloadPacket()" class="w-full neon-button py-4 rounded-xl font-bold text-lg">Download Production Packet</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="py-6 px-4 border-t border-white/5 glass text-center">
+        <p class="text-sm text-slate-500 font-medium">
+            Need help? <a href="mailto:support@properstory.com" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors">support@properstory.com</a>
+            <span class="mx-3 text-slate-700">·</span>
+            Developed by <a href="#" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors">ProperStory Team</a>
+        </p>
+    </footer>
+
+    <script>
+        async function handleLogin(provider = 'Email') {
+            const overlay = document.getElementById('authOverlay');
+            const statusText = document.getElementById('authStatus');
+            overlay.classList.remove('hidden');
+            statusText.innerText = `Authorizing with ${provider}...`;
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            statusText.innerText = 'Verifying Credentials...';
+            await new Promise(resolve => setTimeout(resolve, 800));
+            statusText.innerText = 'Finalizing Session...';
+            await new Promise(resolve => setTimeout(resolve, 500));
+            overlay.classList.add('hidden');
+            document.getElementById('loginView').classList.add('hidden');
+            document.getElementById('appView').classList.remove('hidden');
+        }
+
+        async function nextStep(step) {
+            const currentStep = document.querySelector('.workflow-step:not(.hidden)');
+            currentStep.classList.add('hidden');
+
+            const nextStepEl = document.getElementById('step' + step);
+            nextStepEl.classList.remove('hidden');
+
+            if (step > 0 && step < 5) {
+                await simulateGeneration(step);
+            } else if (step === 5) {
+                renderFinalPacket();
+            }
+        }
+
+        function prevStep(step) {
+            const currentStep = document.querySelector('.workflow-step:not(.hidden)');
+            currentStep.classList.add('hidden');
+            document.getElementById('step' + step).classList.remove('hidden');
+        }
+
+        async function simulateGeneration(step) {
+            const input = document.getElementById('storyInput').value || 'Viral Niche';
+            let content = '';
+            let areaId = '';
+
+            if (step === 1) {
+                areaId = 'scriptArea';
+                content = `[HOOK]\n0:00-0:05 - "Imagine if you could ${input} without the struggle. Most people think it's about X, but the secret is actually Y."\n\n[BODY]\n0:05-0:45 - Step 1: The Foundation. Explain why traditional methods fail. Introduce the "Viral Pivot" method...\n\n[OUTRO]\n0:45-1:00 - Call to action. "If this helped, hit subscribe for more ${input} secrets."`;
+            } else if (step === 2) {
+                areaId = 'scenesArea';
+                content = `Scene 1: High-energy montage of ${input} success stories.\nScene 2: Close up of host explaining the core problem.\nScene 3: Screen recording showing the 'Wrong Way' vs 'ProperWay'.\nScene 4: B-roll of atmospheric environments.`;
+            } else if (step === 3) {
+                areaId = 'voArea';
+                content = `Scene 1: 0:00 - 0:05 (Fast, Punchy)\nScene 2: 0:05 - 0:20 (Explanatory, Calm)\nScene 3: 0:20 - 0:40 (Analytical, Sharp)\nScene 4: 0:40 - 1:00 (Inspiring, Warm)`;
+            } else if (step === 4) {
+                areaId = 'promptArea';
+                content = `S1 Prompt: Cinematic 4k drone shot of ${input} landscape, neon accents, hyper-realistic.\nS2 Prompt: Studio lighting, talking head, blurred background, depth of field.\nS3 Prompt: Split screen UI design, futuristic glow, high contrast.`;
+            }
+
+            const area = document.getElementById(areaId);
+            area.value = '';
+            for (let char of content) {
+                area.value += char;
+                await new Promise(r => setTimeout(r, 10));
+            }
+        }
+
+        function renderFinalPacket() {
+            const input = document.getElementById('storyInput').value || 'Viral Niche';
+            const script = document.getElementById('scriptArea').value;
+            const scenes = document.getElementById('scenesArea').value;
+            const vo = document.getElementById('voArea').value;
+            const prompts = document.getElementById('promptArea').value;
+
+            const packet = document.getElementById('finalPacket');
+            packet.innerHTML = `
+                <div class="text-center border-b-2 border-slate-200 pb-4 mb-6">
+                    <div class="text-xs font-bold text-cyan-600 uppercase tracking-widest mb-1">Official Production Packet</div>
+                    <h1 class="text-3xl font-extrabold text-slate-900">${input}</h1>
+                    <div class="mt-2 inline-block px-3 py-1 rounded-full bg-cyan-100 text-cyan-700 text-[10px] font-bold uppercase">Generated with ProperStory</div>
+                </div>
+                <div class="space-y-6">
+                    <section>
+                        <h3 class="text-lg font-bold text-slate-800 border-l-4 border-cyan-500 pl-2 mb-2">1. Full Viral Script</h3>
+                        <div class="whitespace-pre-wrap text-slate-600 text-sm leading-relaxed">${script}</div>
+                    </section>
+                    <section>
+                        <h3 class="text-lg font-bold text-slate-800 border-l-4 border-cyan-500 pl-2 mb-2">2. Storyboard & Scenes</h3>
+                        <div class="whitespace-pre-wrap text-slate-600 text-sm leading-relaxed">${scenes}</div>
+                    </section>
+                    <section>
+                        <h3 class="text-lg font-bold text-slate-800 border-l-4 border-cyan-500 pl-2 mb-2">3. Voice Over Timing</h3>
+                        <div class="whitespace-pre-wrap text-slate-600 text-sm leading-relaxed">${vo}</div>
+                    </section>
+                    <section>
+                        <h3 class="text-lg font-bold text-slate-800 border-l-4 border-cyan-500 pl-2 mb-2">4. Visual AI Prompts</h3>
+                        <div class="whitespace-pre-wrap text-slate-600 text-sm leading-relaxed">${prompts}</div>
+                    </section>
+                </div>
+                <div class="mt-12 pt-6 border-t border-slate-200 text-center">
+                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">End of Production Packet · Generated with ProperStory</div>
+                </div>
+            `;
+        }
+
+        function downloadPacket() {
+            alert('Packet generated! In a real app, this would trigger a PDF/Doc download.');
+        }
+    </script>
+</body>
+</html>

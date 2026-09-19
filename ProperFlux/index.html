@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProperFlux — Master Trading & Web3 Agent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+        }
+        .neon-border {
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .neon-border:focus-within, .neon-border:hover {
+            border-color: rgba(0, 243, 255, 0.6);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+        .neon-text {
+            color: #00f3ff;
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
+        }
+        .neon-button {
+            background: linear-gradient(45deg, #00f3ff, #00a3ff);
+            color: #020617;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        .neon-button:hover {
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        .glow-dot {
+            animation: pulse-glow 2s infinite;
+        }
+        .report-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+        .report-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Background Glows -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-900/20 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-900/20 blur-[120px]"></div>
+    </div>
+
+    <main class="flex-grow flex flex-col items-center px-4 py-12 relative">
+
+        <!-- Auth Loading Overlay -->
+        <div id="authOverlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md">
+            <div class="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin mb-4"></div>
+            <p class="text-cyan-400 font-bold tracking-widest uppercase text-sm animate-pulse" id="authStatus">Authorizing...</p>
+        </div>
+
+        <!-- LOGIN VIEW -->
+        <div id="loginView" class="w-full flex flex-col items-center justify-center">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-widest">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 glow-dot"></span>
+                    Master Quant & Web3 Architect
+                </div>
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+                    <span class="text-white">Proper</span><span class="neon-text">Flux</span>
+                </h1>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                    Professional-grade market tracking, trading intelligence, and asset creation. Dominate the chain with Master AI precision.
+                </p>
+            </div>
+
+            <div class="w-full max-w-md glass p-8 rounded-3xl neon-border">
+                <h2 class="text-2xl font-bold text-center text-white mb-8">Welcome Back</h2>
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                        <input type="email" id="loginEmail" placeholder="name@example.com" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+                        <input type="password" placeholder="••••••••" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                    </div>
+                    <button onclick="handleLogin('Email')" class="w-full neon-button py-3 rounded-xl font-bold text-lg mt-4">Log In</button>
+                </div>
+                <div class="relative mb-6">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
+                    <div class="relative flex justify-center text-xs uppercase"><span class="bg-transparent px-2 text-slate-500 font-medium">Or continue with</span></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="handleLogin('Google')" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                        <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-4 h-4" alt="Google"> Google
+                    </button>
+                    <button onclick="handleLogin('Apple')" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                        <svg class="w-4 h-4 fill-current text-white" viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-54.2 18.4-56.8-18 26.3-46.6 41.2-84.7 42.4-35.5.2-64.3-23.2-84.7-23.2-19.8 0-47.8 22.5-76.3 23.2-31.3.7-60.3-22.2-83.5-44.5-21.3-20.3-38.3-50.4-38.3-82.5 0-33.6 20.3-63.5 54.7-81.5 32.3-16.7 71.4-22.2 105.8-22.2 32.3 0 62.3 16.7 84.7 34.7 22.4 18 36.7 44.5 36.7 75.6 0 34.7-21.3 61.5-54.7 76.3zM256 147.4c-15.4 0-28 11.7-30.6 28.3-12.5 43.5-32.3 75.6-64.3 75.6-32.3 0-57.3-21.3-74.7-47.8-17.4-26.3-26.3-58.3-26.3-90.4 0-33.6 20.3-63.5 54.7-81.5 34.7-18 74.7-18 105.8-18 15.4 0 28 11.7 30.6 28.3 12.5 43.5 32.3 75.6 64.3 75.6 32.3 0 57.3-21.3 74.7-47.8 17.4-26.3 26.3-58.3 26.3-90.4 0-33.6-20.3-63.5-54.7-81.5z"/></svg> Apple
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- APP VIEW -->
+        <div id="appView" class="hidden w-full flex flex-col items-center">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-widest">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 glow-dot"></span>
+                    Master Quant Command
+                </div>
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+                    <span class="text-white">Proper</span><span class="neon-text">Flux</span>
+                </h1>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                    High-frequency intelligence for the modern trader. Track, create, and dominate the digital asset frontier with the Master Quant & Web3 Architect.
+                </p>
+            </div>
+
+            <!-- Market Tracker Rectangle -->
+            <div id="marketTracker" class="w-full max-w-6xl glass p-8 rounded-3xl neon-border mb-12 report-section">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Live Market Intelligence
+                    </h2>
+                    <div class="flex gap-3">
+                        <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded border border-cyan-500/30 uppercase font-bold">Real-Time</span>
+                        <button onclick="analyzeMarket()" class="neon-button px-6 py-2 rounded-xl font-bold text-sm">Refresh Flux</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="glass p-4 rounded-2xl border border-white/5 flex flex-col">
+                        <span class="text-xs text-slate-500 uppercase font-bold mb-1">BTC/USD</span>
+                        <span class="text-2xl font-bold text-white">$64,210.50</span>
+                        <span class="text-xs text-green-400 font-bold">+2.4% (24h)</span>
+                    </div>
+                    <div class="glass p-4 rounded-2xl border border-white/5 flex flex-col">
+                        <span class="text-xs text-slate-500 uppercase font-bold mb-1">ETH/USD</span>
+                        <span class="text-2xl font-bold text-white">$3,450.12</span>
+                        <span class="text-xs text-red-400 font-bold">-1.1% (24h)</span>
+                    </div>
+                    <div class="glass p-4 rounded-2xl border border-white/5 flex flex-col">
+                        <span class="text-xs text-slate-500 uppercase font-bold mb-1">SOL/USD</span>
+                        <span class="text-2xl font-bold text-white">$142.88</span>
+                        <span class="text-xs text-green-400 font-bold">+5.7% (24h)</span>
+                    </div>
+                    <div class="glass p-4 rounded-2xl border border-white/5 flex flex-col">
+                        <span class="text-xs text-slate-500 uppercase font-bold mb-1">Market Sentiment</span>
+                        <span class="text-2xl font-bold neon-text">GREED</span>
+                        <span class="text-xs text-slate-400 font-bold">Index: 72/100</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trading Dashboard Rectangle -->
+            <div id="tradingDashboard" class="w-full max-w-5xl glass p-8 rounded-3xl neon-border mb-12 report-section">
+                <h2 class="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                    <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Quant Strategy Hub
+                </h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="glass p-6 rounded-2xl border border-white/10">
+                            <h3 class="text-cyan-400 font-bold uppercase text-xs tracking-widest mb-4">Portfolio Overview</h3>
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <p class="text-slate-500 text-xs uppercase font-bold">Total Equity</p>
+                                    <p class="text-4xl font-extrabold text-white">$1,240,500.00</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-slate-500 text-xs uppercase font-bold">24h PnL</p>
+                                    <p class="text-xl font-bold text-green-400">+$12,400.50</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass p-6 rounded-2xl border border-white/10">
+                            <h3 class="text-cyan-400 font-bold uppercase text-xs tracking-widest mb-4">Active AI Trade Signals</h3>
+                            <div id="signalList" class="space-y-3">
+                                <div class="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/5">
+                                    <div>
+                                        <span class="font-bold text-white">SOL/USD</span>
+                                        <span class="ml-2 text-xs text-slate-400">Long Entry @ 140.00</span>
+                                    </div>
+                                    <span class="text-xs font-bold text-green-400 bg-green-400/10 px-2 py-1 rounded">HIGH CONFIDENCE</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/5">
+                                    <div>
+                                        <span class="font-bold text-white">BTC/USD</span>
+                                        <span class="ml-2 text-xs text-slate-400">Short Entry @ 66,000</span>
+                                    </div>
+                                    <span class="text-xs font-bold text-yellow-400 bg-yellow-400/10 px-2 py-1 rounded">MEDIUM CONFIDENCE</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass p-6 rounded-2xl neon-border flex flex-col">
+                        <h3 class="text-white font-bold mb-4 flex items-center gap-2">
+                            <span class="w-2 h-4 bg-cyan-500 rounded-full"></span> Agent Advisor
+                        </h3>
+                        <div id="agentAdvice" class="text-slate-400 text-sm italic flex-grow mb-6">
+                            "Current volatility in ALTcoins suggests a shift toward stablecoin accumulation. I recommend hedging 20% of SOL holdings."
+                        </div>
+                        <button onclick="getNewSignal()" class="neon-button py-3 rounded-xl font-bold text-sm">Get New Signal</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Asset Factory Rectangle -->
+            <div id="assetFactory" class="w-full max-w-5xl glass p-8 rounded-3xl neon-border mb-12 report-section">
+                <h2 class="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                    <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Web3 Asset Factory
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div class="glass p-6 rounded-2xl border border-white/10">
+                            <h3 class="text-cyan-400 font-bold uppercase text-xs tracking-widest mb-4">Token Architect</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1">Token Name</label>
+                                    <input type="text" placeholder="e.g. ProperCoin" class="w-full bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 outline-none text-slate-200 text-sm">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1">Total Supply</label>
+                                        <input type="text" placeholder="1,000,000,000" class="w-full bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 outline-none text-slate-200 text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1">Tax %</label>
+                                        <input type="text" placeholder="2%" class="w-full bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 outline-none text-slate-200 text-sm">
+                                    </div>
+                                </div>
+                                <button onclick="createToken()" class="w-full neon-button py-2 rounded-lg font-bold text-sm mt-2">Deploy Token</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="glass p-6 rounded-2xl border border-white/10">
+                            <h3 class="text-cyan-400 font-bold uppercase text-xs tracking-widest mb-4">NFT Strategist</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1">Collection Name</label>
+                                    <input type="text" placeholder="e.g. ProperAvatars" class="w-full bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 outline-none text-slate-200 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1">Rarity Matrix</label>
+                                    <select class="w-full bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 outline-none text-slate-200 text-sm">
+                                        <option>Algorithmic Gaussian</option>
+                                        <option>Linear Distribution</option>
+                                        <option>Master Agent Curated</option>
+                                    </select>
+                                </div>
+                                <button onclick="createNFT()" class="w-full neon-button py-2 rounded-lg font-bold text-sm mt-2">Generate Collection</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discovery Hub Rectangle -->
+            <div id="discoveryHub" class="w-full max-w-6xl glass p-8 rounded-3xl neon-border mb-12 report-section">
+                <h2 class="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                    <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Discovery Hub
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass p-6 rounded-2xl border border-white/5 hover:border-cyan-500/50 transition-all cursor-pointer">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 rounded-full bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-bold">T1</div>
+                            <span class="text-[10px] bg-green-500/20 text-green-400 px-2 py-1 rounded font-bold uppercase">Trending</span>
+                        </div>
+                        <h3 class="text-white font-bold mb-1">Nexus Token (NXS)</h3>
+                        <p class="text-slate-400 text-xs mb-4">High liquidity surge detected in Asia-Pacific markets.</p>
+                        <div class="text-xs text-cyan-400 font-bold">Agent Score: 94/100</div>
+                    </div>
+                    <div class="glass p-6 rounded-2xl border border-white/5 hover:border-cyan-500/50 transition-all cursor-pointer">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 rounded-full bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-bold">NFT</div>
+                            <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-1 rounded font-bold uppercase">Rare</span>
+                        </div>
+                        <h3 class="text-white font-bold mb-1">CyberPunks V2</h3>
+                        <p class="text-slate-400 text-xs mb-4">Whale accumulation detected across 12 unique wallets.</p>
+                        <div class="text-xs text-cyan-400 font-bold">Agent Score: 88/100</div>
+                    </div>
+                    <div class="glass p-6 rounded-2xl border border-white/5 hover:border-cyan-500/50 transition-all cursor-pointer">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 rounded-full bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-bold">T2</div>
+                            <span class="text-[10px] bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded font-bold uppercase">Volatile</span>
+                        </div>
+                        <h3 class="text-white font-bold mb-1">FluxCoin (FLX)</h3>
+                        <p class="text-slate-400 text-xs mb-4">Massive volatility alert. Potential for 10x or total crash.</p>
+                        <div class="text-xs text-cyan-400 font-bold">Agent Score: 62/100</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="hidden flex flex-col items-center gap-4 mb-20">
+                <div class="w-12 h-12 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
+                <p class="text-slate-400 animate-pulse" id="loadingText">Analyzing Blockchain...</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-6 px-4 border-t border-white/5 glass text-center">
+        <p class="text-sm text-slate-500 font-medium">
+            Need help? <a href="mailto:support@properflux.com" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors">support@properflux.com</a>
+            <span class="mx-3 text-slate-700">·</span>
+            Developed by <a href="#" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors">ProperFlux Team</a>
+        </p>
+    </footer>
+
+    <script>
+        const userDb = { emails: [] };
+
+        async function handleLogin(provider = 'Email') {
+            const emailInput = document.getElementById('loginEmail');
+            const email = emailInput ? emailInput.value.trim() : '';
+            if (provider === 'Email' && !email) { alert('Please enter your email.'); return; }
+            if (email && !userDb.emails.includes(email)) userDb.emails.push(email);
+
+            const overlay = document.getElementById('authOverlay');
+            const statusText = document.getElementById('authStatus');
+            overlay.classList.remove('hidden');
+
+            try {
+                statusText.innerText = 'Synchronizing with Chain...';
+                await new Promise(r => setTimeout(r, 800));
+                statusText.innerText = 'Verifying Quant Credentials...';
+                await new Promise(r => setTimeout(r, 600));
+                overlay.classList.add('hidden');
+                document.getElementById('loginView').classList.add('hidden');
+                document.getElementById('appView').classList.remove('hidden');
+
+                // Trigger initial animations
+                setTimeout(() => {
+                    const sections = ['marketTracker', 'tradingDashboard', 'assetFactory', 'discoveryHub'];
+                    sections.forEach((id, i) => {
+                        setTimeout(() => document.getElementById(id)?.classList.add('visible'), i * 200);
+                    });
+                }, 100);
+            } catch (e) {
+                overlay.classList.add('hidden');
+                alert('Login failed.');
+            }
+        }
+
+        async function analyzeMarket() {
+            const btn = event.target;
+            const loading = document.getElementById('loadingState');
+            const loadingText = document.getElementById('loadingText');
+
+            btn.disabled = true;
+            btn.innerText = 'Scanning...';
+            loading.classList.remove('hidden');
+
+            const steps = ["Analyzing order books...", "Tracking whale movements...", "Calculating sentiment index...", "Updating heatmaps..."];
+            for (let step of steps) {
+                loadingText.innerText = step;
+                await new Promise(r => setTimeout(r, 600));
+            }
+
+            loading.classList.add('hidden');
+            btn.disabled = false;
+            btn.innerText = 'Refresh Flux';
+            alert('Market intelligence updated. New trade signals generated.');
+        }
+
+        async function getNewSignal() {
+            const adviceDiv = document.getElementById('agentAdvice');
+            adviceDiv.innerText = 'Calculating next move...';
+
+            await new Promise(r => setTimeout(r, 1200));
+            const signals = [
+                "Bullish divergence on ETH. Look for entry at 3,300. Target 3,800.",
+                "RSI Overbought on SOL. Suggesting partial profit taking at current levels.",
+                "Low-cap gem detected in AI sector. Accumulate slowly on 4h dips.",
+                "Market wide liquidity drain. Increase stablecoin reserves to 40%."
+            ];
+            adviceDiv.innerText = `"${signals[Math.floor(Math.random() * signals.length)]}"`;
+        }
+
+        function createToken() {
+            alert('Token parameters analyzed by Master Agent. Smart contract generated and ready for deployment on Ethereum/Solana.');
+        }
+
+        function createNFT() {
+            alert('Rarity matrix calculated. Generation sequence started. 10,000 unique assets are being minted with ProperFlux precision.');
+        }
+    </script>
+</body>
+</html>

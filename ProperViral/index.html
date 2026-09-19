@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProperViral — Master YouTube Ideation Agent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+        .neon-border {
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .neon-border:focus-within, .neon-border:hover {
+            border-color: rgba(0, 243, 255, 0.6);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+        .neon-text {
+            color: #00f3ff;
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
+        }
+        .neon-button {
+            background: linear-gradient(45deg, #00f3ff, #00a3ff);
+            color: #020617;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        .neon-button:hover {
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        .niche-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            transition: all 0.2s ease;
+            font-size: 0.75rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            white-space: nowrap;
+        }
+        .niche-btn:hover {
+            background: rgba(0, 243, 255, 0.1);
+            border-color: rgba(0, 243, 255, 0.4);
+            color: #fff;
+        }
+        .niche-btn.active {
+            background: rgba(0, 243, 255, 0.2);
+            border-color: rgba(0, 243, 255, 0.6);
+            color: #00f3ff;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .idea-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        .idea-card:hover {
+            border-color: rgba(0, 243, 255, 0.4);
+            transform: scale(1.02);
+            background: rgba(30, 41, 59, 0.8);
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        .glow-dot {
+            animation: pulse-glow 2s infinite;
+        }
+        .report-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+        .report-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Background Glows -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-900/20 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-900/20 blur-[120px]"></div>
+    </div>
+
+    <!-- Auth Loading Overlay -->
+    <div id="authOverlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md">
+        <div class="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin mb-4"></div>
+        <p class="text-cyan-400 font-bold tracking-widest uppercase text-sm animate-pulse" id="authStatus">Authorizing...</p>
+    </div>
+
+    <main class="flex-grow flex flex-col items-center px-4 py-12 relative">
+
+        <!-- LOGIN VIEW -->
+        <div id="loginView" class="w-full flex flex-col items-center justify-center">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-widest">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 glow-dot"></span>
+                    Master YouTube Ideation
+                </div>
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+                    <span class="text-white">Proper</span><span class="neon-text">Viral</span>
+                </h1>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                    Stop guessing. Use a Master Ideation Agent to analyze niches, crack the algorithm, and scale to $10k/month.
+                </p>
+            </div>
+
+            <div class="w-full max-w-md glass p-8 rounded-3xl neon-border">
+                <h2 class="text-2xl font-bold text-center text-white mb-8">Welcome Back</h2>
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                        <input type="email" id="loginEmail" placeholder="name@example.com" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+                        <input type="password" placeholder="••••••••" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                    </div>
+                    <button id="emailLoginBtn" class="w-full neon-button py-3 rounded-xl font-bold text-lg mt-4">Log In</button>
+                </div>
+                <div class="relative mb-6">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
+                    <div class="relative flex justify-center text-xs uppercase"><span class="bg-transparent px-2 text-slate-500 font-medium">Or continue with</span></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <button id="googleLoginBtn" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                        <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-4 h-4" alt="Google"> Google
+                    </button>
+                    <button id="appleLoginBtn" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                        <svg class="w-4 h-4 fill-current text-white" viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-54.2 18.4-56.8-18 26.3-46.6 41.2-84.7 42.4-35.5.2-64.3-23.2-84.7-23.2-19.8 0-47.8 22.5-76.3 23.2-31.3.7-60.3-22.2-83.5-44.5-21.3-20.3-38.3-50.4-38.3-82.5 0-33.6 20.3-63.5 54.7-81.5 32.3-16.7 71.4-22.2 105.8-22.2 32.3 0 62.3 16.7 84.7 34.7 22.4 18 36.7 44.5 36.7 75.6 0 34.7-21.3 61.5-54.7 76.3zM256 147.4c-15.4 0-28 11.7-30.6 28.3-12.5 43.5-32.3 75.6-64.3 75.6-32.3 0-57.3-21.3-74.7-47.8-17.4-26.3-26.3-58.3-26.3-90.4 0-33.6 20.3-63.5 54.7-81.5 34.7-18 74.7-18 105.8-18 15.4 0 28 11.7 30.6 28.3 12.5 43.5 32.3 75.6 64.3 75.6 32.3 0 57.3-21.3 74.7-47.8 17.4-26.3 26.3-58.3 26.3-90.4 0-33.6-20.3-63.5-54.7-81.5z"/></svg> Apple
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- APP VIEW -->
+        <div id="appView" class="hidden w-full flex flex-col items-center">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-widest">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 glow-dot"></span>
+                    Master Ideation Agent
+                </div>
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+                    <span class="text-white">Proper</span><span class="neon-text">Viral</span>
+                </h1>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                    Deploy a professional-grade analysis of any niche. Crack the algorithm with a Master Agent blueprint to $10k/month.
+                </p>
+            </div>
+
+            <!-- Interaction Rectangle -->
+            <div class="w-full max-w-2xl space-y-6 mb-16">
+                <div class="glass p-2 rounded-2xl neon-border">
+                    <div class="flex flex-col md:flex-row gap-2">
+                        <input type="text" id="nicheInput"
+                            placeholder="Enter your niche (e.g. AI Productivity, Minimalist Living...)"
+                            class="flex-grow bg-transparent px-4 py-4 outline-none text-slate-200 placeholder-slate-500 text-lg">
+                        <button onclick="generateFullReport()" id="genBtn" class="neon-button px-8 py-4 rounded-xl font-bold text-lg transition-all">
+                            Analyze Niche
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-2xl neon-border">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="w-1 h-4 bg-cyan-500 rounded-full"></span>
+                        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest">Quick Select Niche</h3>
+                    </div>
+                    <div id="nicheTags" class="flex flex-wrap gap-2 justify-center">
+                        <!-- Buttons generated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Master Report Container -->
+            <div id="resultsContainer" class="hidden w-full max-w-5xl space-y-12 pb-20">
+                <div id="reportHeader" class="report-section glass p-8 rounded-3xl neon-border flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div class="text-center md:text-left">
+                        <h2 class="text-4xl font-extrabold text-white mb-2" id="reportNicheName">Niche Analysis</h2>
+                        <p class="text-slate-400">Master Agent Market Evaluation</p>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center p-4 rounded-2xl bg-slate-900/50 border border-white/5">
+                            <div class="text-xs text-slate-500 uppercase font-bold mb-1">Niche Score</div>
+                            <div class="text-2xl font-bold neon-text" id="scoreNiche">0</div>
+                        </div>
+                        <div class="text-center p-4 rounded-2xl bg-slate-900/50 border border-white/5">
+                            <div class="text-xs text-slate-500 uppercase font-bold mb-1">Channel Pot.</div>
+                            <div class="text-2xl font-bold neon-text" id="scoreChannel">0</div>
+                        </div>
+                        <div class="text-center p-4 rounded-2xl bg-slate-900/50 border border-white/5">
+                            <div class="text-xs text-slate-500 uppercase font-bold mb-1">Top Creator</div>
+                            <div class="text-2xl font-bold neon-text" id="scoreTop">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="analysisGrid" class="report-section grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass p-6 rounded-2xl border border-white/5 neon-border">
+                        <h3 class="text-cyan-400 font-bold uppercase text-xs tracking-widest mb-4">The Good (Opportunities)</h3>
+                        <ul id="goodList" class="text-slate-300 space-y-2 text-sm list-disc pl-4"></ul>
+                    </div>
+                    <div class="glass p-6 rounded-2xl border border-white/5 neon-border">
+                        <h3 class="text-red-400 font-bold uppercase text-xs tracking-widest mb-4">The Bad (Risks)</h3>
+                        <ul id="badList" class="text-slate-300 space-y-2 text-sm list-disc pl-4"></ul>
+                    </div>
+                    <div class="glass p-6 rounded-2xl border border-white/5 neon-border">
+                        <h3 class="text-yellow-400 font-bold uppercase text-xs tracking-widest mb-4">The Gaps (Unmet Needs)</h3>
+                        <ul id="gapsList" class="text-slate-300 space-y-2 text-sm list-disc pl-4"></ul>
+                    </div>
+                    <div class="glass p-6 rounded-2xl border border-white/5 neon-border">
+                        <h3 class="text-blue-400 font-bold uppercase text-xs tracking-widest mb-4">Sub-Niches to Dominate</h3>
+                        <ul id="subNichesList" class="text-slate-300 space-y-2 text-sm list-disc pl-4"></ul>
+                    </div>
+                </div>
+
+                <div id="marketIntel" class="report-section glass p-8 rounded-3xl neon-border">
+                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Market Intelligence
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div>
+                            <h3 class="text-slate-400 uppercase text-xs font-bold mb-4 tracking-widest">Direct Competitors (Similar Size)</h3>
+                            <div id="compList" class="space-y-3"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-slate-400 uppercase text-xs font-bold mb-4 tracking-widest">Niche Titans (Top Performing)</h3>
+                            <div id="titanList" class="space-y-3"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="viralConcepts" class="report-section">
+                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Viral Concepts & Thumbnails
+                    </h2>
+                    <div id="ideasGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+
+                <div id="growthBlueprint" class="report-section glass p-8 rounded-3xl neon-border">
+                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Growth Blueprint
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="text-cyan-400 font-bold uppercase text-xs mb-2">High-Volume Keywords</h3>
+                                <div id="keywordList" class="flex flex-wrap gap-2"></div>
+                            </div>
+                            <div>
+                                <h3 class="text-cyan-400 font-bold uppercase text-xs mb-2">Recommended Tags</h3>
+                                <div id="tagList" class="flex flex-wrap gap-2"></div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/50 p-6 rounded-2xl border border-white/5">
+                            <h3 class="text-white font-bold mb-4 flex items-center justify-between">
+                                Channel Setup Guide
+                                <button onclick="toggleSetupGuide()" class="text-xs text-cyan-400 hover:underline">Reveal Prompts</button>
+                            </h3>
+                            <div id="setupGuide" class="hidden text-slate-400 text-sm space-y-4">
+                                <div class="p-3 rounded-lg bg-slate-800 border border-cyan-500/20">
+                                    <p class="font-bold text-cyan-400 mb-1">Bio Prompt:</p>
+                                    <p class="italic">"Write a high-conversion YouTube bio for a channel focused on [Niche]. Emphasize transformation, authority, and a clear call to action."</p>
+                                </div>
+                                <div class="p-3 rounded-lg bg-slate-800 border border-cyan-500/20">
+                                    <p class="font-bold text-cyan-400 mb-1">Banner Prompt:</p>
+                                    <p class="italic">"Create a minimalist, high-authority banner design for [Niche]. Include a value proposition and a schedule. Colors: Midnight Slate and Neon Cyan."</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="monetization" class="report-section glass p-8 rounded-3xl neon-border">
+                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> $10k/Month Roadmap
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-6 rounded-2xl bg-slate-900/50 border border-white/5">
+                            <h3 class="text-cyan-400 font-bold uppercase text-xs mb-4">Affiliate Products</h3>
+                            <ul id="affiliateList" class="text-slate-300 space-y-2 text-sm list-disc pl-4"></ul>
+                        </div>
+                        <div class="p-6 rounded-2xl bg-slate-900/50 border border-white/5">
+                            <h3 class="text-cyan-400 font-bold uppercase text-xs mb-4">Digital Products (Free to Build)</h3>
+                            <ul id="digitalList" class="text-slate-300 space-y-2 text-sm list-disc pl-4"></ul>
+                        </div>
+                        <div class="p-6 rounded-2xl bg-cyan-900/20 border border-cyan-500/30">
+                            <h3 class="text-white font-bold uppercase text-xs mb-4">Revenue Path</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-xs text-slate-400">Pre-Monetization Goal</p>
+                                    <p class="text-xl font-bold text-white">$5,000 /mo</p>
+                                    <p class="text-[10px] text-cyan-400">via Affiliates & Digital Products</p>
+                                </div>
+                                <div class="border-t border-white/10 pt-4">
+                                    <p class="text-xs text-slate-400">Post-Monetization Goal</p>
+                                    <p class="text-xl font-bold text-white">$5,000 /mo</p>
+                                    <p class="text-[10px] text-cyan-400">via AdSense & Sponsorships</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="hidden flex flex-col items-center gap-4">
+                <div class="w-12 h-12 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
+                <p class="text-slate-400 animate-pulse" id="loadingText">Analyzing viral patterns...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-6 px-4 border-t border-white/5 glass text-center">
+        <p class="text-sm text-slate-500 font-medium">
+            Need help? <a href="mailto:support@properviral.com" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors">support@properviral.com</a>
+            <span class="mx-3 text-slate-700">·</span>
+            Developed by <a href="#" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors">ProperViral Team</a>
+        </p>
+    </footer>
+
+    <script>
+        const userDb = { emails: [] };
+
+        const niches = [
+            "Personal Finance", "Weight Loss", "Coding", "AI Tools", "Productivity",
+            "Crypto", "Fitness", "YouTube", "Side Hustle", "Self Help",
+            "Motivation", "Relationship", "Education", "Meal Prep", "Real Estate",
+            "AI Marketing", "AI Sales", "Movie Reviews", "Gaming", "AI Trading",
+            "AI Agents", "Automations", "Workflows"
+        ];
+
+        const ideasTemplates = [
+            { title: "The Secret to [Niche] That No One One Tells You", why: "Curiosity gap and insider knowledge promise.", thumb: "High contrast split screen: 'Hidden' vs 'Revealed' with an arrow." },
+            { title: "I Tried [Niche] for 30 Days: Here's What Happened", why: "Challenge format and personal transformation.", thumb: "Before/After side-by-side with a shock-face reaction." },
+            { title: "Stop Doing [Niche] the Wrong Way (Do This Instead)", why: "Fear of mistake and immediate solution.", thumb: "Red X over a common mistake, Green check over the solution." },
+            { title: "10 [Niche] Tools That Feel Illegal to Know", why: "Power-user appeal and 'forbidden' value.", thumb: "Collage of mysterious tool logos with 'TOP SECRET' stamp." },
+            { title: "Why [Niche] is Dying in 2026 (And How to Survive)", why: "Urgency, trend analysis, and survival instinct.", thumb: "Dramatic 'Downward Trend' graph with a 'SURVIVAL GUIDE' text overlay." },
+            { title: "From Beginner to Pro in [Niche]: A Step-by-Step Guide", why: "Clear path to mastery and structured value.", thumb: "Step-by-step ladder graphic leading to a gold trophy." },
+        ];
+
+        window.selectNiche = function(niche, btn) {
+            const input = document.getElementById('nicheInput');
+            if (input) input.value = niche;
+            document.querySelectorAll('.niche-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        };
+
+        window.toggleSetupGuide = function() {
+            const guide = document.getElementById('setupGuide');
+            if (guide) guide.classList.toggle('hidden');
+        };
+
+        window.handleLogin = async function(provider = 'Email') {
+            const emailInput = document.getElementById('loginEmail');
+            const email = emailInput ? emailInput.value.trim() : '';
+            if (provider === 'Email' && !email) {
+                alert('Please enter your email to continue.');
+                return;
+            }
+            if (email && !userDb.emails.includes(email)) {
+                userDb.emails.push(email);
+            }
+            const overlay = document.getElementById('authOverlay');
+            const statusText = document.getElementById('authStatus');
+            overlay.classList.remove('hidden');
+            statusText.innerText = 'Authorizing...';
+            await new Promise(r => setTimeout(r, 800));
+            statusText.innerText = 'Verifying...';
+            await new Promise(r => setTimeout(r, 600));
+            statusText.innerText = 'Finalizing...';
+            await new Promise(r => setTimeout(r, 400));
+            overlay.classList.add('hidden');
+            document.getElementById('loginView').classList.add('hidden');
+            document.getElementById('appView').classList.remove('hidden');
+
+            setTimeout(() => {
+                const sections = ['appView'].concat(Array.from(document.querySelectorAll('.report-section')).map(s => s.id).filter(Boolean));
+                sections.forEach((id, i) => {
+                    const el = document.getElementById(id);
+                    if (el) setTimeout(() => el.classList.add('visible'), i * 200);
+                });
+            }, 100);
+        };
+
+        window.generateFullReport = async function() {
+            const input = document.getElementById('nicheInput');
+            const btn = document.getElementById('genBtn');
+            const results = document.getElementById('resultsContainer');
+            const loading = document.getElementById('loadingState');
+            const loadingText = document.getElementById('loadingText');
+
+            if (!input || !input.value.trim()) {
+                alert('Please enter a niche first!');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = 'Analyzing...';
+            results.classList.add('hidden');
+            loading.classList.remove('hidden');
+
+            const niche = input.value.trim();
+            const steps = ["Scanning trends...", "Analyzing gaps...", "Generating concepts...", "Finalizing report..."];
+            for (let step of steps) {
+                loadingText.innerText = step;
+                await new Promise(r => setTimeout(r, 600));
+            }
+
+            document.getElementById('reportNicheName').innerText = niche;
+            document.getElementById('scoreNiche').innerText = Math.floor(Math.random() * 20) + 80;
+            document.getElementById('scoreChannel').innerText = Math.floor(Math.random() * 20) + 75;
+            document.getElementById('scoreTop').innerText = Math.floor(Math.random() * 10) + 90;
+
+            fillList('goodList', [`High demand for ${niche}`, `Low competition`, `Strong appeal`, `High CPM`]);
+            fillList('badList', [`Saturation`, `Trend shifts`, `Retention challenges`]);
+            fillList('gapsList', [`Case studies`, `Roadmaps`, `Psychology focus`]);
+            fillList('subNichesList', [`${niche} Basics`, `Advanced ${niche}`, `Psychology of ${niche}`]);
+
+            fillList('compList', ['Channel A', 'Channel B'], true);
+            fillList('titanList', ['Titan X', 'Titan Y'], true);
+
+            const grid = document.getElementById('ideasGrid');
+            grid.innerHTML = '';
+            ideasTemplates.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'idea-card p-6 rounded-2xl flex flex-col h-full relative overflow-hidden';
+                card.innerHTML = `
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="text-cyan-400 text-xs font-bold uppercase tracking-widest">Viral Concept</div>
+                            <div class="px-2 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold">Score: ${Math.floor(Math.random()*30)+70}</div>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">${t.title.replace(/\[Niche\]/g, niche)}</h3>
+                        <div class="mb-4">
+                            <p class="text-xs text-slate-500 uppercase font-bold mb-1">Thumbnail</p>
+                            <p class="text-sm text-slate-300 italic">${t.thumb}</p>
+                        </div>
+                        <div class="bg-slate-900/50 p-3 rounded-lg border border-white/5">
+                            <p class="text-xs text-slate-500 uppercase font-bold mb-1">Psychology</p>
+                            <p class="text-sm text-slate-300">${t.why}</p>
+                        </div>
+                    </div>
+                    <button class="mt-6 w-full py-2 rounded-lg bg-white/5 hover:bg-cyan-500/10 border border-white/10 text-slate-400 hover:text-cyan-400 text-sm font-semibold transition-all">Copy Concept</button>
+                `;
+                grid.appendChild(card);
+            });
+
+            fillList('keywordList', [`${niche} tutorial`, `viral ${niche}`], false, 'badge');
+            fillList('tagList', [`#${niche.replace(/\s+/g, '')}`, '#viral'], false, 'badge');
+            fillList('affiliateList', ['Software', 'Gear'], false);
+            fillList('digitalList', ['Checklist', 'Prompts'], false);
+
+            loading.classList.add('hidden');
+            results.classList.remove('hidden');
+            btn.disabled = false;
+            btn.innerText = 'Analyze Niche';
+
+            const sections = ['reportHeader', 'analysisGrid', 'marketIntel', 'viralConcepts', 'growthBlueprint', 'monetization'];
+            sections.forEach((id, i) => {
+                setTimeout(() => document.getElementById(id)?.classList.add('visible'), i * 200);
+            });
+        }
+
+        function fillList(id, items, isStyled = false, mode = 'list') {
+            const list = document.getElementById(id);
+            if (!list) return;
+            list.innerHTML = '';
+            items.forEach(item => {
+                if (mode === 'badge') {
+                    const badge = document.createElement('span');
+                    badge.className = 'px-2 py-1 rounded-md bg-slate-800 border border-white/10 text-slate-300 text-xs';
+                    badge.innerText = item;
+                    list.appendChild(badge);
+                } else if (isStyled) {
+                    const div = document.createElement('div');
+                    div.className = 'flex justify-between items-center p-2 rounded-lg bg-white/5 text-sm';
+                    div.innerHTML = `<span>${item}</span><span class="text-cyan-400 text-[10px] font-bold">ANALYZED</span>`;
+                    list.appendChild(div);
+                } else {
+                    const li = document.createElement('li');
+                    li.className = 'text-slate-300 text-sm';
+                    li.innerText = item;
+                    list.appendChild(li);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const tagsContainer = document.getElementById('nicheTags');
+            if (tagsContainer) {
+                niches.forEach(niche => {
+                    const btn = document.createElement('button');
+                    btn.className = 'niche-btn';
+                    btn.innerText = niche;
+                    btn.onclick = () => selectNiche(niche, btn);
+                    tagsContainer.appendChild(btn);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

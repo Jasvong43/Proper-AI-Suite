@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProperPixelz — AI Visual Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+        .neon-border {
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .neon-border:focus-within, .neon-border:hover {
+            border-color: rgba(0, 243, 255, 0.6);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+        .neon-text {
+            color: #00f3ff;
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
+        }
+        .neon-button {
+            background: linear-gradient(45deg, #00f3ff, #00a3ff);
+            color: #020617;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        .neon-button:hover {
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        .glow-dot {
+            animation: pulse-glow 2s infinite;
+        }
+        .asset-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        .asset-card:hover {
+            border-color: rgba(0, 243, 255, 0.4);
+            background: rgba(30, 41, 59, 0.8);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Background Glows -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-900/20 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-900/20 blur-[120px]"></div>
+    </div>
+
+    <!-- Auth Loading Overlay -->
+    <div id="authOverlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md">
+        <div class="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin mb-4"></div>
+        <p class="text-cyan-400 font-bold tracking-widest uppercase text-sm animate-pulse" id="authStatus">Authorizing...</p>
+    </div>
+
+    <!-- Main Content Wrapper -->
+    <main class="flex-grow flex flex-col items-center relative">
+        <!-- LOGIN VIEW -->
+        <div id="loginView" class="w-full flex flex-col items-center justify-center px-4 py-12">
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-widest">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 glow-dot"></span>
+                Visual Generation
+            </div>
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+                <span class="text-white">Proper</span><span class="neon-text">Pixelz</span>
+            </h1>
+            <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                Professional AI image and video synthesis. Bulk batching and multi-engine support for high-end creators.
+            </p>
+        </div>
+
+        <div class="w-full max-w-md glass p-8 rounded-3xl neon-border">
+            <h2 class="text-2xl font-bold text-center text-white mb-8">Welcome Back</h2>
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="name@example.com" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+                    <input type="password" placeholder="••••••••" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                </div>
+                <button id="emailLoginBtn" class="w-full neon-button py-3 rounded-xl font-bold text-lg mt-4">Log In</button>
+            </div>
+            <div class="relative mb-6">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
+                <div class="relative flex justify-center text-xs uppercase"><span class="bg-transparent px-2 text-slate-500 font-medium">Or continue with</span></div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <button id="googleLoginBtn" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                    <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-4 h-4" alt="Google"> Google
+                </button>
+                <button id="appleLoginBtn" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                    <svg class="w-4 h-4 fill-current text-white" viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-54.2 18.4-56.8-18 26.3-46.6 41.2-84.7 42.4-35.5.2-64.3-23.2-84.7-23.2-19.8 0-47.8 22.5-76.3 23.2-31.3.7-60.3-22.2-83.5-44.5-21.3-20.3-38.3-50.4-38.3-82.5 0-33.6 20.3-63.5 54.7-81.5 32.3-16.7 71.4-22.2 105.8-22.2 32.3 0 62.3 16.7 84.7 34.7 22.4 18 36.7 44.5 36.7 75.6 0 34.7-21.3 61.5-54.7 76.3zM256 147.4c-15.4 0-28 11.7-30.6 28.3-12.5 43.5-32.3 75.6-64.3 75.6-32.3 0-57.3-21.3-74.7-47.8-17.4-26.3-26.3-58.3-26.3-90.4 0-33.6 20.3-63.5 54.7-81.5 34.7-18 74.7-18 105.8-18 15.4 0 28 11.7 30.6 28.3 12.5 43.5 32.3 75.6 64.3 75.6 32.3 0 57.3-21.3 74.7-47.8 17.4-26.3 26.3-58.3 26.3-90.4 0-33.6-20.3-63.5-54.7-81.5z"/></svg> Apple
+                </button>
+            </div>
+        </div>
+        </div>
+
+        <!-- APP VIEW -->
+        <div id="appView" class="hidden w-full flex flex-col items-center p-8 space-y-8">
+
+            <!-- Centered Brand Header -->
+            <div class="text-center mb-4">
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+                    <span class="text-white">Proper</span><span class="neon-text">Pixelz</span>
+                </h1>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                    Professional AI image and video synthesis. Bulk batching and multi-engine support for high-end creators.
+                </p>
+            </div>
+
+            <!-- Rectangle 1: Prompt Engineering -->
+            <div class="w-full max-w-5xl glass p-8 rounded-3xl neon-border space-y-6">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H15V9"></path></svg>
+                    Prompt Engineering
+                </h3>
+                <textarea id="mainPrompt" placeholder="Describe the visual you imagine..." class="w-full h-32 bg-slate-900/50 border border-white/10 rounded-2xl p-4 outline-none text-slate-200 focus:border-cyan-500/50 transition-all resize-none mb-4"></textarea>
+                <textarea id="negativePrompt" placeholder="Negative prompt (things to avoid...)" class="w-full h-20 bg-slate-900/50 border border-white/10 rounded-2xl p-4 outline-none text-slate-400 focus:border-cyan-500/50 transition-all text-sm resize-none"></textarea>
+                <div class="flex gap-4">
+                    <button id="genBtn" onclick="generateAsset('gallery')" class="flex-grow neon-button py-4 rounded-xl font-bold text-xl">Generate</button>
+                    <button onclick="addToBatch()" class="px-6 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Rectangle 2: Generator Settings -->
+            <div class="w-full max-w-5xl glass p-8 rounded-3xl neon-border space-y-6">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m-6-2h12"></path></svg>
+                    Generator Settings
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Model Engine</label>
+                        <select id="modelSelect" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                            <option value="sd_xl">Stable Diffusion XL</option>
+                            <option value="mid_v6">Midjourney v6 (Simulated)</option>
+                            <option value="sora">Sora (Video Engine)</option>
+                            <option value="kling">Kling AI (Video Engine)</option>
+                            <option value="runway_g3">Runway Gen-3</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Asset Type</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button id="typeImage" onclick="setAssetType('image')" class="py-2 rounded-lg bg-cyan-500 text-slate-900 font-bold text-xs transition-all">Image</button>
+                            <button id="typeVideo" onclick="setAssetType('video')" class="py-2 rounded-lg bg-slate-800 text-slate-400 font-bold text-xs transition-all">Video</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Batch Size (1-50)</label>
+                        <input type="number" id="batchSize" value="1" min="1" max="50" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 outline-none text-slate-200 text-sm">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Aspect Ratio</label>
+                        <select id="aspectRatio" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 outline-none text-slate-200 text-sm">
+                            <option value="1:1">1:1 Square</option>
+                            <option value="16:9">16:9 Cinema</option>
+                            <option value="9:16">9:16 Portrait</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Resolution</label>
+                        <select id="resolution" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 outline-none text-slate-200 text-sm">
+                            <option value="1k">1K (Standard)</option>
+                            <option value="2k">2K (HD)</option>
+                            <option value="4k">4K (Ultra)</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="videoParams" class="hidden">
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Duration</label>
+                    <select id="duration" class="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 outline-none text-slate-200 text-sm">
+                        <option value="short">Short Form (Max 3m)</option>
+                        <option value="long">Long Form (Max 10m)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Guidance Scale</label>
+                    <input type="range" min="1" max="20" value="7" class="w-full accent-cyan-500">
+                </div>
+            </div>
+
+            <!-- Result Canvas (Integrated) -->
+            <div id="canvas" class="w-full max-w-5xl glass rounded-3xl border border-white/10 flex items-center justify-center relative overflow-hidden min-h-[400px] mb-8">
+                <div id="canvasEmpty" class="text-center p-12">
+                    <div class="w-20 h-20 rounded-full bg-slate-900 flex items-center justify-center mx-auto mb-4 opacity-50">
+                        <svg class="w-10 h-10 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <p class="text-slate-500 font-medium">Your generated masterpiece will appear here</p>
+                </div>
+                <div id="canvasLoading" class="hidden absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-950/60 backdrop-blur-sm">
+                    <div class="w-12 h-12 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin mb-4"></div>
+                    <p class="text-cyan-400 font-bold tracking-widest uppercase text-sm animate-pulse">Synthesizing Pixels...</p>
+                </div>
+                <div id="canvasResult" class="hidden w-full h-full flex items-center justify-center p-8"></div>
+            </div>
+
+            <!-- Rectangle 3: Assets Area (Gallery & Queue) -->
+            <div class="w-full max-w-5xl glass rounded-3xl neon-border overflow-hidden">
+                <div class="flex border-b border-white/10">
+                    <button onclick="switchAssetsView('gallery')" id="btn-gallery" class="flex-1 py-4 font-bold text-sm uppercase tracking-widest transition-all bg-cyan-500/10 text-cyan-400 border-b-2 border-cyan-500">Gallery</button>
+                    <button onclick="switchAssetsView('queue')" id="btn-queue" class="flex-1 py-4 font-bold text-sm uppercase tracking-widest transition-all text-slate-400 hover:bg-white/5">Batch Queue</button>
+                </div>
+                <div class="p-8">
+                    <div id="galleryContainer" class="assets-view">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-white">Master Gallery</h3>
+                            <div class="flex gap-4">
+                                <button onclick="filterGallery('all')" class="text-xs text-slate-400 hover:text-white transition-all uppercase font-bold">All</button>
+                                <button onclick="filterGallery('image')" class="text-xs text-slate-400 hover:text-white transition-all uppercase font-bold">Images</button>
+                                <button onclick="filterGallery('video')" class="text-xs text-slate-400 hover:text-white transition-all uppercase font-bold">Videos</button>
+                            </div>
+                        </div>
+                        <div id="galleryGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+                    </div>
+                    <div id="queueContainer" class="assets-view hidden space-y-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-white">Batch Queue</h3>
+                            <button onclick="clearQueue()" class="text-xs text-red-400 hover:text-red-300 font-bold uppercase tracking-widest">Clear All</button>
+                        </div>
+                        <div id="queueList" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Profile / Footer Info -->
+            <div class="w-full max-w-xs flex items-center gap-3 p-3 rounded-2xl bg-slate-900/50 border border-white/5 mb-12">
+                <div class="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center text-slate-900 font-bold text-xs">JS</div>
+                <div class="overflow-hidden">
+                    <p class="text-xs font-bold text-white truncate">jsmit@proper.ai</p>
+                    <p class="text-[10px] text-slate-500">Pro Plan</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-3 px-4 border-t border-white/5 glass text-center">
+        <p class="text-xs text-slate-500 font-medium">
+            Need help? <a href="mailto:support@properpixelz.com" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors">support@properpixelz.com</a>
+            <span class="mx-3 text-slate-700">·</span>
+            Developed by <a href="#" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors">ProperPixelz Team</a>
+        </p>
+    </footer>
+
+    <script>
+        const userDb = { emails: [] };
+        let gallery = [];
+        let queue = [];
+        let currentAssetType = 'image';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Login Listeners
+            document.getElementById('emailLoginBtn').addEventListener('click', () => handleLogin('Email'));
+            document.getElementById('googleLoginBtn').addEventListener('click', () => handleLogin('Google'));
+            document.getElementById('appleLoginBtn').addEventListener('click', () => handleLogin('Apple'));
+        });
+
+        function setAssetType(type) {
+            currentAssetType = type;
+            const imgBtn = document.getElementById('typeImage');
+            const vidBtn = document.getElementById('typeVideo');
+            const vidParams = document.getElementById('videoParams');
+
+            if (type === 'image') {
+                imgBtn.className = 'py-2 rounded-lg bg-cyan-500 text-slate-900 font-bold text-xs transition-all';
+                vidBtn.className = 'py-2 rounded-lg bg-slate-800 text-slate-400 font-bold text-xs transition-all';
+                vidParams.classList.add('hidden');
+            } else {
+                vidBtn.className = 'py-2 rounded-lg bg-cyan-500 text-slate-900 font-bold text-xs transition-all';
+                imgBtn.className = 'py-2 rounded-lg bg-slate-800 text-slate-400 font-bold text-xs transition-all';
+                vidParams.classList.remove('hidden');
+            }
+        }
+
+        function switchAssetsView(viewId) {
+            document.querySelectorAll('.assets-view').forEach(v => v.classList.add('hidden'));
+            document.getElementById(viewId + 'Container').classList.remove('hidden');
+
+            document.getElementById('btn-gallery').className = 'flex-1 py-4 font-bold text-sm uppercase tracking-widest transition-all text-slate-400 hover:bg-white/5';
+            document.getElementById('btn-queue').className = 'flex-1 py-4 font-bold text-sm uppercase tracking-widest transition-all text-slate-400 hover:bg-white/5';
+
+            const activeBtn = document.getElementById('btn-' + viewId);
+            activeBtn.className = 'flex-1 py-4 font-bold text-sm uppercase tracking-widest transition-all bg-cyan-500/10 text-cyan-400 border-b-2 border-cyan-500';
+        }
+
+        async function handleLogin(provider = 'Email') {
+            const emailInput = document.getElementById('loginEmail');
+            const email = emailInput ? emailInput.value.trim() : '';
+            if (provider === 'Email' && !email) { alert('Please enter your email to continue.'); return; }
+            if (email && !userDb.emails.includes(email)) { userDb.emails.push(email); }
+            const overlay = document.getElementById('authOverlay');
+            const statusText = document.getElementById('authStatus');
+            overlay.classList.remove('hidden');
+            statusText.innerText = `Authorizing with ${provider}...`;
+            await new Promise(r => setTimeout(r, 1000));
+            statusText.innerText = 'Verifying Credentials...';
+            await new Promise(r => setTimeout(r, 800));
+            statusText.innerText = 'Finalizing Session...';
+            await new Promise(r => setTimeout(r, 500));
+            overlay.classList.add('hidden');
+            document.getElementById('loginView').classList.add('hidden');
+            document.getElementById('appView').classList.remove('hidden');
+        }
+
+        async function generateAsset(target = 'canvas') {
+            const prompt = document.getElementById('mainPrompt').value;
+            if (!prompt) { alert('Please enter a prompt!'); return; }
+
+            const btn = document.getElementById('genBtn');
+            const canvasLoading = document.getElementById('canvasLoading');
+            const canvasResult = document.getElementById('canvasResult');
+            const canvasEmpty = document.getElementById('canvasEmpty');
+
+            btn.disabled = true;
+            btn.innerText = 'Generating...';
+            canvasLoading.classList.remove('hidden');
+            canvasResult.classList.add('hidden');
+            canvasEmpty.classList.add('hidden');
+
+            await new Promise(r => setTimeout(r, 3000));
+
+            const assetId = 'asset_' + Date.now();
+            const asset = {
+                id: assetId,
+                type: currentAssetType,
+                prompt: prompt,
+                url: currentAssetType === 'image'
+                    ? `https://picsum.photos/seed/${assetId}/800/600`
+                    : `https://www.w3schools.com/html/mov_bbb.mp4`,
+                timestamp: new Date().toLocaleString()
+            };
+
+            gallery.push(asset);
+
+            canvasLoading.classList.add('hidden');
+            canvasResult.classList.remove('hidden');
+
+            if (currentAssetType === 'image') {
+                canvasResult.innerHTML = `<img src="${asset.url}" class="max-w-full max-h-full rounded-2xl shadow-2xl border border-white/10" alt="AI Gen">`;
+            } else {
+                canvasResult.innerHTML = `<video src="${asset.url}" controls class="max-w-full max-h-full rounded-2xl shadow-2xl border border-white/10"></video>`;
+            }
+
+            btn.disabled = false;
+            btn.innerText = 'Generate';
+            updateGallery();
+        }
+
+        function addToBatch() {
+            const prompt = document.getElementById('mainPrompt').value;
+            if (!prompt) { alert('Please enter a prompt!'); return; }
+
+            const batchSize = parseInt(document.getElementById('batchSize').value) || 1;
+            const assetType = currentAssetType;
+
+            for (let i = 0; i < batchSize; i++) {
+                queue.push({
+                    id: 'job_' + Date.now() + i,
+                    prompt: prompt,
+                    type: assetType,
+                    status: 'Pending',
+                    progress: 0
+                });
+            }
+            updateQueue();
+            alert(`${batchSize} jobs added to batch queue!`);
+        }
+
+        function updateQueue() {
+            const list = document.getElementById('queueList');
+            list.innerHTML = '';
+
+            queue.forEach(job => {
+                const item = document.createElement('div');
+                item.className = 'glass p-4 rounded-2xl border border-white/10 flex items-center justify-between';
+                item.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-cyan-400">
+                            ${job.type === 'image' ? 'IMG' : 'VID'}
+                        </div>
+                        <div>
+                            <p class="text-white font-medium text-sm truncate max-w-xs">${job.prompt}</p>
+                            <p class="text-slate-500 text-[10px] uppercase">${job.status}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-24 h-2 bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-cyan-500" style="width: ${job.progress}%"></div>
+                        </div>
+                        <span class="text-xs text-slate-400">${job.progress}%</span>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+
+            if (queue.some(j => j.status === 'Pending')) {
+                setTimeout(() => {
+                    const nextJob = queue.find(j => j.status === 'Pending');
+                    if (nextJob) {
+                        nextJob.status = 'Processing';
+                        let p = 0;
+                        const timer = setInterval(() => {
+                            p += 10;
+                            nextJob.progress = p;
+                            updateQueue();
+                            if (p >= 100) {
+                                clearInterval(timer);
+                                nextJob.status = 'Completed';
+                                const assetId = 'asset_' + Date.now();
+                                gallery.push({
+                                    id: assetId,
+                                    type: nextJob.type,
+                                    prompt: nextJob.prompt,
+                                    url: nextJob.type === 'image' ? `https://picsum.photos/seed/${assetId}/800/600` : `https://www.w3schools.com/html/mov_bbb.mp4`,
+                                    timestamp: new Date().toLocaleString()
+                                });
+                                updateGallery();
+                                updateQueue();
+                            }
+                        }, 300);
+                    }
+                }, 1000);
+            }
+        }
+
+        function updateGallery() {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+            gallery.forEach(asset => {
+                const card = document.createElement('div');
+                card.className = 'asset-card p-3 rounded-2xl';
+                card.innerHTML = `
+                    <div class="aspect-square mb-3 overflow-hidden rounded-xl bg-slate-900">
+                        ${asset.type === 'image'
+                            ? `<img src="${asset.url}" class="w-full h-full object-cover" alt="AI Gen">`
+                            : `<video src="${asset.url}" class="w-full h-full object-cover"></video>`}
+                    </div>
+                    <p class="text-xs text-slate-400 truncate">${asset.prompt}</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-[10px] text-slate-600">${asset.timestamp}</span>
+                        <button class="text-cyan-400 hover:text-cyan-300 text-[10px] font-bold uppercase">View</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterGallery(type) {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+            const filtered = type === 'all' ? gallery : gallery.filter(a => a.type === type);
+            filtered.forEach(asset => {
+                const card = document.createElement('div');
+                card.className = 'asset-card p-3 rounded-2xl';
+                card.innerHTML = `
+                    <div class="aspect-square mb-3 overflow-hidden rounded-xl bg-slate-900">
+                        ${asset.type === 'image'
+                            ? `<img src="${asset.url}" class="w-full h-full object-cover" alt="AI Gen">`
+                            : `<video src="${asset.url}" class="w-full h-full object-cover"></video>`}
+                    </div>
+                    <p class="text-xs text-slate-400 truncate">${asset.prompt}</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-[10px] text-slate-600">${asset.timestamp}</span>
+                        <button class="text-cyan-400 hover:text-cyan-300 text-[10px] font-bold uppercase">View</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function clearQueue() {
+            queue = [];
+            updateQueue();
+        }
+
+        function downloadAllZip() {
+            if (gallery.length === 0) { alert('No assets to download!'); return; }
+            alert(`Zipping ${gallery.length} assets... \n\nPreparing high-res bundle... \n\nYour .zip file is ready for download!`);
+        }
+    </script>
+</body>
+</html>
