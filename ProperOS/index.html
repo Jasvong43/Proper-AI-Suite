@@ -106,6 +106,36 @@
 
         <!-- Agent Status Grid -->
         <div class="w-full max-w-6xl grid grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+            <!-- Viral -->
+            <div id="status-viral" class="status-card glass p-6 rounded-2xl neon-border flex flex-col">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-white font-bold">ProperViral</h3>
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                </div>
+                <p class="text-slate-500 text-xs uppercase font-bold mb-2">Master Ideation Agent</p>
+                <div class="text-slate-300 text-sm italic mb-4">Idle - Ready for analysis</div>
+                <div class="mt-auto text-[10px] text-cyan-400 font-mono">KB: v4.0 Updated</div>
+            </div>
+            <!-- Storyz -->
+            <div id="status-storyz" class="status-card glass p-6 rounded-2xl neon-border flex flex-col">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-white font-bold">ProperStoryz</h3>
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                </div>
+                <p class="text-slate-500 text-xs uppercase font-bold mb-2">Master Script Agent</p>
+                <div class="text-slate-300 text-sm italic mb-4">Idle - Ready for script</div>
+                <div class="mt-auto text-[10px] text-cyan-400 font-mono">KB: v4.1 Updated</div>
+            </div>
+            <!-- VoCaL -->
+            <div id="status-vocal" class="status-card glass p-6 rounded-2xl neon-border flex flex-col">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-white font-bold">ProperVoCaL</h3>
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                </div>
+                <p class="text-slate-500 text-xs uppercase font-bold mb-2">Master Voice Agent</p>
+                <div class="text-slate-300 text-sm italic mb-4">Idle - Ready for audio</div>
+                <div class="mt-auto text-[10px] text-cyan-400 font-mono">KB: v3.5 Updated</div>
+            </div>
             <!-- Pixelz -->
             <div id="status-pixelz" class="status-card glass p-6 rounded-2xl neon-border flex flex-col">
                 <div class="flex justify-between items-center mb-3">
@@ -126,26 +156,6 @@
                 <div class="text-slate-300 text-sm italic mb-4">Idle - Ready for edit</div>
                 <div class="mt-auto text-[10px] text-cyan-400 font-mono">KB: v3.8 Updated</div>
             </div>
-            <!-- Storyz -->
-            <div id="status-storyz" class="status-card glass p-6 rounded-2xl neon-border flex flex-col">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-white font-bold">ProperStoryz</h3>
-                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                </div>
-                <p class="text-slate-500 text-xs uppercase font-bold mb-2">Master Script Agent</p>
-                <div class="text-slate-300 text-sm italic mb-4">Idle - Ready for script</div>
-                <div class="mt-auto text-[10px] text-cyan-400 font-mono">KB: v4.1 Updated</div>
-            </div>
-            <!-- Viral -->
-            <div id="status-viral" class="status-card glass p-6 rounded-2xl neon-border flex flex-col">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-white font-bold">ProperViral</h3>
-                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                </div>
-                <p class="text-slate-500 text-xs uppercase font-bold mb-2">Master Ideation Agent</p>
-                <div class="text-slate-300 text-sm italic mb-4">Idle - Ready for analysis</div>
-                <div class="mt-auto text-[10px] text-cyan-400 font-mono">KB: v4.0 Updated</div>
-            </div>
             <!-- Socialz -->
             <div id="status-socialz" class="status-card glass p-6 rounded-2xl neon-border flex flex-col">
                 <div class="flex justify-between items-center mb-3">
@@ -155,16 +165,6 @@
                 <p class="text-slate-500 text-xs uppercase font-bold mb-2">Master Social Agent</p>
                 <div class="text-slate-300 text-sm italic mb-4">Idle - Ready for calendar</div>
                 <div class="mt-auto text-[10px] text-cyan-400 font-mono">KB: v4.5 Updated</div>
-            </div>
-            <!-- Flux -->
-            <div id="status-flux" class="status-card glass p-6 rounded-2xl neon-border flex flex-col">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-white font-bold">ProperFlux</h3>
-                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                </div>
-                <p class="text-slate-500 text-xs uppercase font-bold mb-2">Master Quant Agent</p>
-                <div class="text-slate-300 text-sm italic mb-4">Idle - Ready for trade</div>
-                <div class="mt-auto text-[10px] text-cyan-400 font-mono">KB: v3.9 Updated</div>
             </div>
         </div>
 
@@ -218,8 +218,8 @@
             await new Promise(r => setTimeout(r, 1000));
 
             if (cmd.toLowerCase().includes('launch') || cmd.toLowerCase().includes('new')) {
-                triggerWorkflow(['Viral', 'Storyz', 'Fuzion', 'Socialz']);
-                appendOverseerMessage(\`Initiating Full-Suite Pipeline for: "${cmd}". I've activated the Viral Agent for niche analysis. Once approved, I will automatically move the blueprint to Storyz for scripting.\`);
+                triggerWorkflow(['Viral', 'Storyz', 'VoCaL', 'Pixelz', 'Fuzion', 'Socialz']);
+                appendOverseerMessage(\`Initiating FULL-SUITE Pipeline for: "${cmd}". Sequence: Viral $\rightarrow$ Storyz $\rightarrow$ VoCaL $\rightarrow$ Pixelz $\rightarrow$ Fuzion $\rightarrow$ Socialz. Activating Master Ideation Agent now.\`);
             } else if (cmd.toLowerCase().includes('status')) {
                 appendOverseerMessage('All systems are operational. Knowledge bases are synchronized. Your specialized agents are on standby.');
             } else {
