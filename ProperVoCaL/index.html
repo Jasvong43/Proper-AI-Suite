@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProperVoCaL — Master Voice Architect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+        }
+        .neon-border {
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .neon-border:focus-within, .neon-border:hover {
+            border-color: rgba(0, 243, 255, 0.6);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+        .neon-text {
+            color: #00f3ff;
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
+        }
+        .neon-button {
+            background: linear-gradient(45deg, #00f3ff, #00a3ff);
+            color: #020617;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        .neon-button:hover {
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        .glow-dot {
+            animation: pulse-glow 2s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Background Glows -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-900/20 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-900/20 blur-[120px]"></div>
+    </div>
+
+    <main class="flex-grow flex flex-col items-center px-4 py-12 relative">
+
+        <!-- Auth Loading Overlay -->
+        <div id="authOverlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md">
+            <div class="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin mb-4"></div>
+            <p class="text-cyan-400 font-bold tracking-widest uppercase text-sm animate-pulse" id="authStatus">Authorizing...</p>
+        </div>
+
+        <!-- LOGIN VIEW -->
+        <div id="loginView" class="w-full flex flex-col items-center justify-center">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-widest">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 glow-dot"></span>
+                    Master Audio Orchestration
+                </div>
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+                    <span class="text-white">Proper</span><span class="neon-text">VoCaL</span>
+                </h1>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                    Psychologically optimized voice synthesis and audio engineering. Command the ear, capture the mind.
+                </p>
+            </div>
+
+            <div class="w-full max-w-md glass p-8 rounded-3xl neon-border">
+                <h2 class="text-2xl font-bold text-center text-white mb-8">Welcome Back</h2>
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                        <input type="email" id="loginEmail" placeholder="name@example.com" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+                        <input type="password" placeholder="••••••••" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                    </div>
+                    <button onclick="handleLogin('Email')" class="w-full neon-button py-3 rounded-xl font-bold text-lg mt-4">Log In</button>
+                </div>
+                <div class="relative mb-6">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
+                    <div class="relative flex justify-center text-xs uppercase"><span class="bg-transparent px-2 text-slate-500 font-medium">Or continue with</span></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="handleLogin('Google')" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                        <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-4 h-4" alt="Google"> Google
+                    </button>
+                    <button onclick="handleLogin('Apple')" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                        <svg class="w-4 h-4 fill-current text-white" viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-54.2 18.4-56.8-18 26.3-46.6 41.2-84.7 42.4-35.5.2-64.3-23.2-84.7-23.2-19.8 0-47.8 22.5-76.3 23.2-31.3.7-60.3-22.2-83.5-44.5-21.3-20.3-38.3-50.4-38.3-82.5 0-33.6 20.3-63.5 54.7-81.5 32.3-16.7 71.4-22.2 105.8-22.2 32.3 0 62.3 16.7 84.7 34.7 22.4 18 36.7 44.5 36.7 75.6 0 34.7-21.3 61.5-54.7 76.3zM256 147.4c-15.4 0-28 11.7-30.6 28.3-12.5 43.5-32.3 75.6-64.3 75.6-32.3 0-57.3-21.3-74.7-47.8-17.4-26.3-26.3-58.3-26.3-90.4 0-33.6 20.3-63.5 54.7-81.5 34.7-18 74.7-18 105.8-18 15.4 0 28 11.7 30.6 28.3 12.5 43.5 32.3 75.6 64.3 75.6 32.3 0-57.3-21.3-74.7-47.8 17.4-26.3 26.3-58.3 26.3-90.4 0-33.6-20.3-63.5-54.7-81.5z"/></svg> Apple
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- APP VIEW -->
+        <div id="appView" class="hidden w-full flex flex-col items-center">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-widest">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 glow-dot"></span>
+                    Master Audio Architect
+                </div>
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
+                    <span class="text-white">Proper</span><span class="neon-text">VoCaL</span>
+                </h1>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                    Psychologically optimized voice synthesis and audio engineering. Command the ear, capture the mind.
+                </p>
+            </div>
+
+            <!-- Audio Studio Rectangle -->
+            <div class="w-full max-w-4xl glass p-8 rounded-3xl neon-border mb-12">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Audio Studio
+                    </h2>
+                    <div class="flex gap-2">
+                        <span class="text-xs text-slate-400 uppercase font-bold mr-2">Engine: Neural-V3</span>
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Script Input</label>
+                            <textarea id="audioScript"
+                                placeholder="Paste your script here..."
+                                class="w-full bg-slate-900/50 border border-white/10 rounded-xl p-4 outline-none text-slate-200 min-h-[200px] focus:border-cyan-500/50 transition-all"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Voice Persona</label>
+                                <select id="voicePersona" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                                    <option>The Confident Expert</option>
+                                    <option>The Relatable Peer</option>
+                                    <option>The Urgent Insider</option>
+                                    <option>The Calm Authority</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Delivery Tone</label>
+                                <select id="deliveryTone" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                                    <option>High Energy</option>
+                                    <option>Mysterious / Low</option>
+                                    <option>Urgent / Fast</option>
+                                    <option>Professional / Balanced</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="generateVoiceover()" class="w-full neon-button py-4 rounded-xl font-bold text-lg transition-all">Synthesize Voice</button>
+                    </div>
+
+                    <div class="glass p-6 rounded-2xl neon-border flex flex-col">
+                        <h3 class="text-white font-bold mb-4 flex items-center gap-2">
+                            <span class="w-2 h-4 bg-cyan-500 rounded-full"></span> Soundscape Mixer
+                        </h3>
+                        <div class="space-y-4 mb-6">
+                            <div class="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/10">
+                                <span class="text-sm text-slate-300">Background Music: <span class="text-cyan-400 font-bold">High-Energy Phonk</span></span>
+                                <span class="text-xs text-slate-500 font-mono">128 BPM</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/10">
+                                <span class="text-sm text-slate-300">Audio Filter: <span class="text-cyan-400 font-bold">Low-Pass (Intro)</span></span>
+                                <span class="text-xs text-slate-500 font-mono">Active</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/10">
+                                <span class="text-sm text-slate-300">Pattern Interrupts: <span class="text-cyan-400 font-bold">3 Points</span></span>
+                                <span class="text-xs text-slate-500 font-mono">Sfx Added</span>
+                            </div>
+                        </div>
+                        <div id="audioPreview" class="bg-slate-900/50 p-4 rounded-xl border border-white/5 text-slate-400 text-sm italic text-center mb-4">
+                            No audio generated yet.
+                        </div>
+                        <button onclick="syncBGM()" class="w-full py-3 rounded-xl bg-white/5 hover:bg-cyan-500/10 border border-white/10 text-slate-400 hover:text-cyan-400 text-sm font-semibold transition-all">Sync with BGM</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="hidden flex flex-col items-center gap-4 mb-20">
+            <div class="w-12 h-12 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
+            <p class="text-slate-400 animate-pulse" id="loadingText">Architecting Audio...</p>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-6 px-4 border-t border-white/5 glass text-center">
+        <p class="text-sm text-slate-500 font-medium">
+            Need help? <a href="mailto:support@propervocal.com" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors">support@propervocal.com</a>
+            <span class="mx-3 text-slate-700">·</span>
+            Developed by <a href="#" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors">ProperVoCaL Team</a>
+        </p>
+    </footer>
+
+    <script>
+        const userDb = { emails: [] };
+
+        async function handleLogin(provider = 'Email') {
+            const emailInput = document.getElementById('loginEmail');
+            const email = emailInput ? emailInput.value.trim() : '';
+            if (provider === 'Email' && !email) { alert('Please enter your email.'); return; }
+            if (email && userDb.emails.includes(email)) userDb.emails.push(email);
+
+            const overlay = document.getElementById('authOverlay');
+            const statusText = document.getElementById('authStatus');
+            overlay.classList.remove('hidden');
+
+            try {
+                statusText.innerText = 'Synchronizing with Neural Engine...';
+                await new Promise(r => setTimeout(r, 800));
+                statusText.innerText = 'Verifying Vocal Credentials...';
+                await new Promise(r => setTimeout(r, 600));
+                overlay.classList.add('hidden');
+                document.getElementById('loginView').classList.add('hidden');
+                document.getElementById('appView').classList.remove('hidden');
+            } catch (e) {
+                overlay.classList.add('hidden');
+                alert('Login failed.');
+            }
+        }
+
+        async function generateVoiceover() {
+            const script = document.getElementById('audioScript').value;
+            if (!script.trim()) { alert('Please enter a script first!'); return; }
+
+            const loading = document.getElementById('loadingState');
+            const loadingText = document.getElementById('loadingText');
+            loading.classList.remove('hidden');
+
+            const steps = ["Analyzing script pacing...", "Synthesizing vocal persona...", "Adding pattern interrupts...", "Rendering high-fidelity audio..."];
+            for (let step of steps) {
+                loadingText.innerText = step;
+                await new Promise(r => setTimeout(r, 800));
+            }
+
+            loading.classList.add('hidden');
+            document.getElementById('audioPreview').innerText = 'Voiceover generated successfully. High-fidelity .wav file ready for ProperFuzion.';
+            alert('Voiceover synthesis complete. Audio assets are now available for production.');
+        }
+
+        function syncBGM() {
+            alert('Background music synchronized with vocal pacing and energy levels.');
+        }
+    </script>
+</body>
+</html>
