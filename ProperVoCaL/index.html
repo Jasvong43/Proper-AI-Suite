@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProperVoCaL — AI Voice Synthesis & Cloning</title>
+    <title>ProperVoCaL — Master Voice Architect</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -47,27 +47,6 @@
         .glow-dot {
             animation: pulse-glow 2s infinite;
         }
-        .voice-card {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .voice-card:hover {
-            border-color: rgba(0, 243, 255, 0.4);
-            background: rgba(30, 41, 59, 0.8);
-        }
-        .voice-card.active {
-            border-color: #00f3ff;
-            background: rgba(0, 243, 255, 0.1);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
-        }
-        .waveform-bar {
-            width: 4px;
-            background: #00f3ff;
-            border-radius: 2px;
-            transition: height 0.2s ease;
-        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -78,7 +57,7 @@
         <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-900/20 blur-[120px]"></div>
     </div>
 
-    <main class="flex-grow flex flex-col items-center justify-center px-4 py-12 relative">
+    <main class="flex-grow flex flex-col items-center px-4 py-12 relative">
 
         <!-- Auth Loading Overlay -->
         <div id="authOverlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md">
@@ -91,13 +70,13 @@
             <div class="text-center mb-12">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-widest">
                     <span class="w-2 h-2 rounded-full bg-cyan-400 glow-dot"></span>
-                    AI Voice Synthesis
+                    Master Audio Orchestration
                 </div>
                 <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
                     <span class="text-white">Proper</span><span class="neon-text">VoCaL</span>
                 </h1>
                 <p class="text-slate-400 text-lg max-w-2xl mx-auto">
-                    Professional-grade voice cloning and synthesis. Create hyper-realistic voiceovers for any project.
+                    Psychologically optimized voice synthesis and audio engineering. Command the ear, capture the mind.
                 </p>
             </div>
 
@@ -112,18 +91,18 @@
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
                         <input type="password" placeholder="••••••••" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
                     </div>
-                    <button id="emailLoginBtn" class="w-full neon-button py-3 rounded-xl font-bold text-lg mt-4">Log In</button>
+                    <button onclick="handleLogin('Email')" class="w-full neon-button py-3 rounded-xl font-bold text-lg mt-4">Log In</button>
                 </div>
                 <div class="relative mb-6">
                     <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
                     <div class="relative flex justify-center text-xs uppercase"><span class="bg-transparent px-2 text-slate-500 font-medium">Or continue with</span></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <button id="googleLoginBtn" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                    <button onclick="handleLogin('Google')" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
                         <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-4 h-4" alt="Google"> Google
                     </button>
-                    <button id="appleLoginBtn" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
-                        <svg class="w-4 h-4 fill-current text-white" viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-54.2 18.4-56.8-18 26.3-46.6 41.2-84.7 42.4-35.5.2-64.3-23.2-84.7-23.2-19.8 0-47.8 22.5-76.3 23.2-31.3.7-60.3-22.2-83.5-44.5-21.3-20.3-38.3-50.4-38.3-82.5 0-33.6 20.3-63.5 54.7-81.5 32.3-16.7 71.4-22.2 105.8-22.2 32.3 0 62.3 16.7 84.7 34.7 22.4 18 36.7 44.5 36.7 75.6 0 34.7-21.3 61.5-54.7 76.3zM256 147.4c-15.4 0-28 11.7-30.6 28.3-12.5 43.5-32.3 75.6-64.3 75.6-32.3 0-57.3-21.3-74.7-47.8-17.4-26.3-26.3-58.3-26.3-90.4 0-33.6 20.3-63.5 54.7-81.5 34.7-18 74.7-18 105.8-18 15.4 0 28 11.7 30.6 28.3 12.5 43.5 32.3 75.6 64.3 75.6 32.3 0 57.3-21.3 74.7-47.8 17.4-26.3 26.3-58.3 26.3-90.4 0-33.6-20.3-63.5-54.7-81.5z"/></svg> Apple
+                    <button onclick="handleLogin('Apple')" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-xl transition-all text-slate-300 font-semibold text-sm">
+                        <svg class="w-4 h-4 fill-current text-white" viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-54.2 18.4-56.8-18 26.3-46.6 41.2-84.7 42.4-35.5.2-64.3-23.2-84.7-23.2-19.8 0-47.8 22.5-76.3 23.2-31.3.7-60.3-22.2-83.5-44.5-21.3-20.3-38.3-50.4-38.3-82.5 0-33.6 20.3-63.5 54.7-81.5 32.3-16.7 71.4-22.2 105.8-22.2 32.3 0 62.3 16.7 84.7 34.7 22.4 18 36.7 44.5 36.7 75.6 0 34.7-21.3 61.5-54.7 76.3zM256 147.4c-15.4 0-28 11.7-30.6 28.3-12.5 43.5-32.3 75.6-64.3 75.6-32.3 0-57.3-21.3-74.7-47.8-17.4-26.3-26.3-58.3-26.3-90.4 0-33.6 20.3-63.5 54.7-81.5 34.7-18 74.7-18 105.8-18 15.4 0 28 11.7 30.6 28.3 12.5 43.5 32.3 75.6 64.3 75.6 32.3 0-57.3-21.3-74.7-47.8 17.4-26.3 26.3-58.3 26.3-90.4 0-33.6-20.3-63.5-54.7-81.5z"/></svg> Apple
                     </button>
                 </div>
             </div>
@@ -134,110 +113,96 @@
             <div class="text-center mb-12">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-widest">
                     <span class="w-2 h-2 rounded-full bg-cyan-400 glow-dot"></span>
-                    AI Voice Synthesis Engine
+                    Master Audio Architect
                 </div>
                 <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4">
                     <span class="text-white">Proper</span><span class="neon-text">VoCaL</span>
                 </h1>
                 <p class="text-slate-400 text-lg max-w-2xl mx-auto">
-                    Clone any voice, synthesize professional narration, and bring your scripts to life.
+                    Psychologically optimized voice synthesis and audio engineering. Command the ear, capture the mind.
                 </p>
             </div>
 
-            <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                <!-- Left Column: Voice Library -->
-                <div class="lg:col-span-1 flex flex-col gap-6">
-                    <div class="glass p-6 rounded-3xl neon-border">
-                        <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-//8v8m0 0V11"></path></svg>
-                            Voice Library
-                        </h2>
-                        <div id="voiceLibrary" class="space-y-3 max-h-[500px] overflow-y-auto pr-2">
-                            <!-- Voices injected here -->
-                        </div>
+            <!-- Audio Studio Rectangle -->
+            <div class="w-full max-w-4xl glass p-8 rounded-3xl neon-border mb-12">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Audio Studio
+                    </h2>
+                    <div class="flex gap-2">
+                        <span class="text-xs text-slate-400 uppercase font-bold mr-2">Engine: Neural-V3</span>
+                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
                     </div>
                 </div>
 
-                <!-- Right Column: Studio & Cloning -->
-                <div class="lg:col-span-2 flex flex-col gap-8">
-
-                    <!-- Text to Speech Studio -->
-                    <div class="glass p-8 rounded-3xl neon-border">
-                        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                            <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8v8m0 0V11"></path></svg>
-                            Voiceover Studio
-                        </h2>
-                        <div class="space-y-6">
-                            <textarea id="ttsInput" placeholder="Enter your script here..." class="w-full h-48 bg-slate-900/50 border border-white/10 rounded-2xl p-4 outline-none text-slate-200 focus:border-cyan-500/50 transition-all text-lg resize-none"></textarea>
-
-                            <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-slate-400 text-sm font-medium">Active Voice:</span>
-                                    <span id="activeVoiceName" class="text-cyan-400 font-bold">Sarah (Premium)</span>
-                                </div>
-                                <button onclick="generateVoiceover()" id="genAudioBtn" class="neon-button px-8 py-3 rounded-xl font-bold text-lg transition-all">
-                                    Synthesize Audio
-                                </button>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Script Input</label>
+                            <textarea id="audioScript"
+                                placeholder="Paste your script here..."
+                                class="w-full bg-slate-900/50 border border-white/10 rounded-xl p-4 outline-none text-slate-200 min-h-[200px] focus:border-cyan-500/50 transition-all"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Voice Persona</label>
+                                <select id="voicePersona" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                                    <option>The Confident Expert</option>
+                                    <option>The Relatable Peer</option>
+                                    <option>The Urgent Insider</option>
+                                    <option>The Calm Authority</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Delivery Tone</label>
+                                <select id="deliveryTone" class="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                                    <option>High Energy</option>
+                                    <option>Mysterious / Low</option>
+                                    <option>Urgent / Fast</option>
+                                    <option>Professional / Balanced</option>
+                                </select>
                             </div>
                         </div>
-
-                        <!-- Audio Player (Hidden by default) -->
-                        <div id="audioPlayer" class="hidden mt-8 p-6 rounded-2xl bg-slate-900/80 border border-cyan-500/30">
-                            <div class="flex items-center gap-6">
-                                <button id="playBtn" class="w-12 h-12 rounded-full bg-cyan-500 flex items-center justify-center text-slate-900 hover:bg-cyan-400 transition-all">
-                                    <svg id="playIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                    <svg id="pauseIcon" class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                                </button>
-                                <div class="flex-grow">
-                                    <div class="flex justify-between text-xs text-slate-400 mb-2">
-                                        <span id="currentTime">0:00</span>
-                                        <span id="duration">0:00</span>
-                                    </div>
-                                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden cursor-pointer" id="progressBar">
-                                        <div id="progressFill" class="h-full bg-cyan-500 w-0 transition-all"></div>
-                                    </div>
-                                </div>
-                                <button onclick="downloadAudio()" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 transition-all">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                </button>
-                            </div>
-                            <div id="waveform" class="flex items-end justify-center gap-1 h-12 mt-4 opacity-50">
-                                <!-- Waveform bars injected here -->
-                            </div>
-                        </div>
+                        <button onclick="generateVoiceover()" class="w-full neon-button py-4 rounded-xl font-bold text-lg transition-all">Synthesize Voice</button>
                     </div>
 
-                    <!-- Cloning Lab -->
-                    <div class="glass p-8 rounded-3xl neon-border">
-                        <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                            <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                            Voice Cloning Lab
-                        </h2>
-                        <div class="flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-2xl p-12 text-center transition-all hover:border-cyan-500/30 group">
-                            <div class="w-16 h-16 rounded-full bg-slate-900 flex items-center justify-center mb-4 group-hover:scale-110 transition-all">
-                                <svg class="w-8 h-8 text-slate-500 group-hover:text-cyan-400 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.8-1.5A7. 7 0 1121 16.5M12 14l4-4m0 0l-4-4m4 4H8"></path></svg>
+                    <div class="glass p-6 rounded-2xl neon-border flex flex-col">
+                        <h3 class="text-white font-bold mb-4 flex items-center gap-2">
+                            <span class="w-2 h-4 bg-cyan-500 rounded-full"></span> Soundscape Mixer
+                        </h3>
+                        <div class="space-y-4 mb-6">
+                            <div class="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/10">
+                                <span class="text-sm text-slate-300">Background Music: <span class="text-cyan-400 font-bold">High-Energy Phonk</span></span>
+                                <span class="text-xs text-slate-500 font-mono">128 BPM</span>
                             </div>
-                            <h3 class="text-white font-bold mb-2">Upload Voice Sample</h3>
-                            <p class="text-slate-500 text-sm mb-6 max-w-xs">Upload a high-quality 30s audio clip for a hyper-realistic clone.</p>
-                            <input type="file" id="voiceUpload" class="hidden" accept="audio/*">
-                            <button onclick="document.getElementById('voiceUpload').click()" class="px-6 py-2 rounded-full bg-white/10 text-white text-sm font-semibold hover:bg-white/20 transition-all">Select Audio File</button>
-                        </div>
-                        <div id="cloneStatus" class="hidden mt-6 p-4 rounded-xl bg-cyan-950/30 border border-cyan-500/30 text-center">
-                            <div class="flex items-center justify-center gap-3">
-                                <div class="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
-                                <p class="text-cyan-400 text-sm font-bold" id="cloneText">Analyzing voice patterns...</p>
+                            <div class="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/10">
+                                <span class="text-sm text-slate-300">Audio Filter: <span class="text-cyan-400 font-bold">Low-Pass (Intro)</span></span>
+                                <span class="text-xs text-slate-500 font-mono">Active</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 rounded-lg bg-white/5 border border-white/10">
+                                <span class="text-sm text-slate-300">Pattern Interrupts: <span class="text-cyan-400 font-bold">3 Points</span></span>
+                                <span class="text-xs text-slate-500 font-mono">Sfx Added</span>
                             </div>
                         </div>
+                        <div id="audioPreview" class="bg-slate-900/50 p-4 rounded-xl border border-white/5 text-slate-400 text-sm italic text-center mb-4">
+                            No audio generated yet.
+                        </div>
+                        <button onclick="syncBGM()" class="w-full py-3 rounded-xl bg-white/5 hover:bg-cyan-500/10 border border-white/10 text-slate-400 hover:text-cyan-400 text-sm font-semibold transition-all">Sync with BGM</button>
                     </div>
-
                 </div>
             </div>
         </div>
 
+        <!-- Loading State -->
+        <div id="loadingState" class="hidden flex flex-col items-center gap-4 mb-20">
+            <div class="w-12 h-12 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
+            <p class="text-slate-400 animate-pulse" id="loadingText">Architecting Audio...</p>
+        </div>
+
     </main>
 
-    <footer class="py-6 px-4 border-t border-white/5 glass text-center">
+    <!-- Footer -->
+    <footer class="mt-auto py-6 px-4 border-t border-white/5 glass text-center">
         <p class="text-sm text-slate-500 font-medium">
             Need help? <a href="mailto:support@propervocal.com" class="text-cyan-400 hover:text-cyan-300 font-bold transition-colors">support@propervocal.com</a>
             <span class="mx-3 text-slate-700">·</span>
@@ -248,205 +213,51 @@
     <script>
         const userDb = { emails: [] };
 
-        const presetVoices = [
-            { id: 'v1', name: 'Sarah', type: 'Premium', gender: 'Female' },
-            { id: 'v2', name: 'James', type: 'Premium', gender: 'Male' },
-            { id: 'v3', name: 'Elena', type: 'Standard', gender: 'Female' },
-            { id: 'v4', name: 'Marcus', type: 'Standard', gender: 'Male' },
-            { id: 'v5', name: 'Aria', type: 'Premium', gender: 'Female' },
-            { id: 'v6', name: 'Leo', type: 'Standard', gender: 'Male' },
-            { id: 'v7', name: 'Mia', type: 'Premium', gender: 'Female' },
-            { id: 'v8', name: 'Ethan', type: 'Standard', gender: 'Male' },
-            { id: 'v9', name: 'Sophie', type: 'Standard', gender: 'Female' },
-            { id: 'v10', name: 'Noah', type: 'Premium', gender: 'Male' },
-            { id: 'v11', name: 'Isabella', type: 'Premium', gender: 'Female' },
-            { id: 'v12', name: 'Liam', type: 'Standard', gender: 'Male' },
-            { id: 'v13', name: 'Chloe', type: 'Standard', gender: 'Female' },
-            { id: 'v14', name: 'Oliver', type: 'Premium', gender: 'Male' },
-            { id: 'v15', name: 'Maya', type: 'Premium', gender: 'Female' },
-            { id: 'v16', name: 'Lucas', type: 'Standard', gender: 'Male' },
-            { id: 'v17', name: 'Luna', type: 'Standard', gender: 'Female' },
-            { id: 'v18', name: 'Mason', type: 'Premium', gender: 'Male' },
-            { id: 'v19', name: 'Nora', type: 'Premium', gender: 'Female' },
-            { id: 'v20', name: 'Logan', type: 'Standard', gender: 'Male' },
-            { id: 'v21', name: 'Lily', type: 'Standard', gender: 'Female' },
-            { id: 'v22', name: 'Caleb', type: 'Premium', gender: 'Male' },
-            { id: 'v23', name: 'Ava', type: 'Premium', gender: 'Female' },
-            { id: 'v24', name: 'Isaac', type: 'Standard', gender: 'Male' },
-            { id: 'v25', name: 'Grace', type: 'Standard', gender: 'Female' },
-            { id: 'v26', name: 'Ezra', type: 'Premium', gender: 'Male' },
-            { id: 'v27', name: 'Zoe', type: 'Premium', gender: 'Female' },
-            { id: 'v28', name: 'Julian', type: 'Standard', gender: 'Male' },
-            { id: 'v29', name: 'Hazel', type: 'Standard', gender: 'Female' },
-            { id: 'v30', name: 'Silas', type: 'Premium', gender: 'Male' },
-            { id: 'v31', name: 'Aurora', type: 'Premium', gender: 'Female' },
-            { id: 'v32', name: 'Felix', type: 'Standard', gender: 'Male' },
-            { id: 'v33', name: 'Willow', type: 'Standard', gender: 'Female' },
-            { id: 'v34', name: 'Jasper', type: 'Premium', gender: 'Male' },
-            { id: 'v35', name: 'Ivy', type: 'Premium', gender: 'Female' },
-            { id: 'v36', name: 'Hugo', type: 'Standard', gender: 'Male' },
-            { id: 'v37', name: 'Ruby', type: 'Standard', gender: 'Female' },
-            { id: 'v38', name: 'Oscar', type: 'Premium', gender: 'Male' },
-            { id: 'v39', name: 'Clara', type: 'Premium', gender: 'Female' },
-            { id: 'v40', name: 'Theo', type: 'Standard', gender: 'Male' },
-            { id: 'v41', name: 'Jade', type: 'Standard', gender: 'Female' },
-            { id: 'v42', name: 'Arthur', type: 'Premium', gender: 'Male' },
-            { id: 'v43', name: 'Nova', type: 'Premium', gender: 'Female' },
-            { id: 'v44', name: 'Milo', type: 'Standard', gender: 'Male' },
-            { id: 'v45', name: 'Stella', type: 'Standard', gender: 'Female' },
-            { id: 'v46', name: 'Arlo', type: 'Premium', gender: 'Male' },
-            { id: 'v47', name: 'Quinn', type: 'Premium', gender: 'Female' },
-            { id: 'v48', name: 'Finn', type: 'Standard', gender: 'Male' },
-            { id: 'v49', name: 'Maya', type: 'Standard', gender: 'Female' },
-            { id: 'v50', name: 'Kai', type: 'Premium', gender: 'Male' },
-        ];
-
-        let clonedVoices = [];
-        let activeVoice = presetVoices[0];
-
-        document.addEventListener('DOMContentLoaded', () => {
-            renderVoices();
-
-            // Login Listeners
-            document.getElementById('emailLoginBtn').addEventListener('click', () => handleLogin('Email'));
-            document.getElementById('googleLoginBtn').addEventListener('click', () => handleLogin('Google'));
-            document.getElementById('appleLoginBtn').addEventListener('click', () => handleLogin('Apple'));
-
-            // Cloning Listener
-            document.getElementById('voiceUpload').addEventListener('change', handleVoiceUpload);
-        });
-
-        function renderVoices() {
-            const library = document.getElementById('voiceLibrary');
-            library.innerHTML = '';
-
-            const allVoices = [...presetVoices, ...clonedVoices];
-            allVoices.forEach(voice => {
-                const card = document.createElement('div');
-                card.className = `voice-card p-4 rounded-2xl flex items-center justify-between ${voice.id === activeVoice.id ? 'active' : ''}`;
-                card.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-cyan-400 font-bold">
-                            ${voice.name[0]}
-                        </div>
-                        <div>
-                            <p class="text-white font-bold text-sm">${voice.name}</p>
-                            <p class="text-slate-500 text-[10px] uppercase">${voice.type} • ${voice.gender}</p>
-                        </div>
-                    </div>
-                    <button onclick="previewVoice('${voice.id}')" class="p-2 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 transition-all">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                    </button>
-                `;
-                card.onclick = () => selectVoice(voice);
-                library.appendChild(card);
-            });
-        }
-
-        function selectVoice(voice) {
-            activeVoice = voice;
-            document.getElementById('activeVoiceName').innerText = `${voice.name} (${voice.type})`;
-            renderVoices();
-        }
-
         async function handleLogin(provider = 'Email') {
             const emailInput = document.getElementById('loginEmail');
             const email = emailInput ? emailInput.value.trim() : '';
-            if (provider === 'Email' && !email) { alert('Please enter your email to continue.'); return; }
-            if (email && !userDb.emails.includes(email)) { userDb.emails.push(email); }
+            if (provider === 'Email' && !email) { alert('Please enter your email.'); return; }
+            if (email && userDb.emails.includes(email)) userDb.emails.push(email);
+
             const overlay = document.getElementById('authOverlay');
             const statusText = document.getElementById('authStatus');
             overlay.classList.remove('hidden');
-            statusText.innerText = `Authorizing with ${provider}...`;
-            await new Promise(r => setTimeout(r, 1000));
-            statusText.innerText = 'Verifying Credentials...';
-            await new Promise(r => setTimeout(r, 800));
-            statusText.innerText = 'Finalizing Session...';
-            await new Promise(r => setTimeout(r, 500));
-            overlay.classList.add('hidden');
-            document.getElementById('loginView').classList.add('hidden');
-            document.getElementById('appView').classList.remove('hidden');
+
+            try {
+                statusText.innerText = 'Synchronizing with Neural Engine...';
+                await new Promise(r => setTimeout(r, 800));
+                statusText.innerText = 'Verifying Vocal Credentials...';
+                await new Promise(r => setTimeout(r, 600));
+                overlay.classList.add('hidden');
+                document.getElementById('loginView').classList.add('hidden');
+                document.getElementById('appView').classList.remove('hidden');
+            } catch (e) {
+                overlay.classList.add('hidden');
+                alert('Login failed.');
+            }
         }
 
         async function generateVoiceover() {
-            const text = document.getElementById('ttsInput').value;
-            if (!text) { alert('Please enter some text first!'); return; }
+            const script = document.getElementById('audioScript').value;
+            if (!script.trim()) { alert('Please enter a script first!'); return; }
 
-            const btn = document.getElementById('genAudioBtn');
-            const player = document.getElementById('audioPlayer');
+            const loading = document.getElementById('loadingState');
+            const loadingText = document.getElementById('loadingText');
+            loading.classList.remove('hidden');
 
-            btn.disabled = true;
-            btn.innerText = 'Synthesizing...';
-            player.classList.add('hidden');
-
-            await new Promise(r => setTimeout(r, 2000));
-
-            btn.disabled = false;
-            btn.innerText = 'Synthesize Audio';
-            player.classList.remove('hidden');
-            startWaveform();
-        }
-
-        function startWaveform() {
-            const wave = document.getElementById('waveform');
-            wave.innerHTML = '';
-            for (let i = 0; i < 30; i++) {
-                const bar = document.createElement('div');
-                bar.className = 'waveform-bar';
-                bar.style.height = '4px';
-                wave.appendChild(bar);
+            const steps = ["Analyzing script pacing...", "Synthesizing vocal persona...", "Adding pattern interrupts...", "Rendering high-fidelity audio..."];
+            for (let step of steps) {
+                loadingText.innerText = step;
+                await new Promise(r => setTimeout(r, 800));
             }
 
-            setInterval(() => {
-                const bars = wave.querySelectorAll('.waveform-bar');
-                bars.forEach(bar => {
-                    const h = Math.random() * 40 + 4;
-                    bar.style.height = `${h}px`;
-                });
-            }, 150);
+            loading.classList.add('hidden');
+            document.getElementById('audioPreview').innerText = 'Voiceover generated successfully. High-fidelity .wav file ready for ProperFuzion.';
+            alert('Voiceover synthesis complete. Audio assets are now available for production.');
         }
 
-        async function handleVoiceUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const status = document.getElementById('cloneStatus');
-            const statusText = document.getElementById('cloneText');
-
-            status.classList.remove('hidden');
-
-            const phases = [
-                "Uploading sample...",
-                "Analyzing vocal timbre...",
-                "Extracting frequency patterns...",
-                "Training AI model...",
-                "Finalizing clone..."
-            ];
-
-            for (let phase of phases) {
-                statusText.innerText = phase;
-                await new Promise(r => setTimeout(r, 1200));
-            }
-
-            const newVoice = {
-                id: 'clone_' + Date.now(),
-                name: 'My Clone',
-                type: 'Cloned',
-                gender: 'Custom'
-            };
-
-            clonedVoices.push(newVoice);
-            renderVoices();
-            status.classList.add('hidden');
-            alert('Voice cloned successfully!');
-        }
-
-        function downloadAudio() {
-            alert('Downloading high-fidelity WAV file...');
-        }
-
-        function previewVoice(id) {
-            alert('Playing a short sample of ' + (presetVoices.find(v => v.id === id)?.name || 'Cloned Voice') + '...');
+        function syncBGM() {
+            alert('Background music synchronized with vocal pacing and energy levels.');
         }
     </script>
 </body>

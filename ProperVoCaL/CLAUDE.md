@@ -1,43 +1,35 @@
-# ProperVoCal Project Reference
+# ProperVoCaL Project Reference
 
 ## Overview
-ProperVoCal is the voice synthesis and cloning powerhouse of the Proper AI Suite. It allows users to generate professional AI voiceovers and create hyper-realistic voice clones for content creation.
+ProperVoCaL is the audio engineering and voice synthesis powerhouse of the Proper AI Suite. It specializes in creating high-retention, psychologically optimized voiceovers and soundscapes that drive engagement and trust.
 
 ## Tech Stack
 - **Frontend**: HTML5, Tailwind CSS (CDN), Vanilla JavaScript.
 - **Styling**: Proper AI Suite Standard (Midnight Slate `#020617` / Neon Cyan `#00f3ff`).
-- **Architecture**: Single Page Application (SPA) with view-switching.
+- **Architecture**: Single Page Application (SPA) with a "Centered Rectangle" layout.
 
 ## UI Components & Styling
 - **Theme**: Dark theme with glowing neon accents.
-- **Glassmorphism**: `.glass` for all main containers.
-- **Neon Elements**: `.neon-border`, `.neon-text`, and `.neon-button` for consistent branding.
-- **Voice Cards**: `.voice-card` with active states to indicate the currently selected voice.
-- **Audio Visuals**: Simulated waveform using `.waveform-bar` for a high-tech feel.
+- **Layout**: "Centered Rectangle" Design:
+    - **Header**: Center-aligned branding and high-impact description.
+    - **Audio Studio**: A centered glassmorphic rectangle containing the Voice synthesis controls and tone selectors.
+    - **Soundscape Mixer**: A modular zone for selecting background music, adding sfx (pattern interrupts), and managing audio levels.
+- **Glassmorphism**: `.glass` for all containers.
+- **Neon Elements**: `.neon-border`, `.neon-text`, and `.neon-button` for consistent suite branding.
 
-## Key Features
-- **Authentication & Lead Capture**:
-    - Mirror of ProperViral/ProperStory login flow.
-    - Lead capture for email list building.
-    - Simulated authorization sequence.
-- **Text-to-Speech (TTS) Studio**:
-    - Input area for script entry.
-    - Voice selection from a library of 50 professional presets (25 Male / 25 Female).
-    - Real-time generation simulation with a custom audio player and waveform.
-- **Voice Cloning Lab**:
-    - File upload interface for voice samples.
-    - Multi-phase simulation: Upload $\rightarrow$ Analyze $\rightarrow$ Train $\rightarrow$ Finalize.
-    - Ability to save and name cloned voices in the library.
-- **Voice Library**:
-    - Grid of preset and cloned voices.
-    - Preview functionality and active voice tracking.
+## AI Agent: Master Voice Architect
+- **Expertise**: Top-tier mastery of vocal psychology, tonality, and audio production.
+- **Core Capabilities**:
+    - **Persona Design**: Ability to create specific vocal personas (e.g., "The Confident Expert", "The Relatable Peer", "The Urgent Insider").
+    - **Retention Engineering**: strategically placing pauses, emphasis, and "pattern interrupts" to prevent viewer drop-off.
+    - **BGM Synchronization**: Matching the energy of the background music to the psychological arc of the script.
+    - **Audio Polish**: Simulating professional studio quality with clarity and depth.
 
 ## Key Functions
 - `handleLogin()`: Standard suite authorization and lead capture.
-- `generateVoiceover()`: Simulates the TTS generation process and triggers the audio player.
-- `handleVoiceUpload()`: Manages the voice cloning pipeline and updates the voice library.
-- `selectVoice()`: Updates the active voice context and refreshes the UI.
-- `startWaveform()`: Animates the audio visualizer.
+- `generateVoiceover()`: Orchestrates the voice synthesis based on script and persona.
+- `applyAudioEffects()`: Adds sfx and filters (like low-pass or high-pass) for cinematic effect.
+- `syncBGM()`: Matches background music to the script's pacing and energy.
 
 ## Project Structure
 - `index.html`: All logic, styles, and HTML for the application.
