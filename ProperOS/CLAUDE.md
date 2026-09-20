@@ -29,11 +29,18 @@ ProperOS is the Orchestrator and Central Nervous System of the Proper AI Suite. 
 ## Official Suite Workflow Sequence
 The standardized production pipeline for a high-converting campaign:
 1. **ProperViral**: Niche Analysis $\rightarrow$ Winning Angle $\rightarrow$ Blueprint.
-2. **ProperStoryz**: Scripting $\rightarrow$ Storyboarding $\rightarrow$ Pacing.
+2. **ProperStoryz**: Scripting $\rightarrow$ Storyboarding $\rightarrow$ **HUMAN EDIT (POV/Anecdote)** $\rightarrow$ Pacing.
 3. **ProperVoCaL**: Voiceover Design $\rightarrow$ Tone Selection $\rightarrow$ Audio Scripting.
-4. **ProperPixelz**: Visual Assets $\rightarrow$ Thumbnails $\rightarrow$ B-Roll $\rightarrow$ Comparison Images.
-5. **ProperFuzion**: Production $\rightarrow$ Editing $\rightarrow$ Syncing $\rightarrow$ Viral Scoring.
-6. **ProperSocialz**: Distribution $\rightarrow$ Calendar $\rightarrow$ Platform Copy $\rightarrow$ Funnel.
+4. **ProperPixelz**: Visual Assets $\rightarrow$ Thumbnails $\rightarrow$ B-Roll $\rightarrow$ **STYLE VARIATION**.
+5. **ProperFuzion**: Production $\rightarrow$ **STRUCTURAL REVIEW (Anti-Template)** $\rightarrow$ Syncing $\rightarrow$ Viral Scoring.
+6. **ProperSocialz**: Distribution $\rightarrow$ **AI DISCLOSURE CHECK** $\rightarrow$ Calendar $\rightarrow$ Platform Copy $\rightarrow$ Funnel.
+
+## Human-in-the-Loop (HITL) Compliance
+To avoid "AI Slop" flags and YouTube channel bans, the suite enforces three mandatory human checkpoints:
+- **Editorial Pass**: ProperStoryz requires a human-added unique perspective or personal anecdote.
+- **Visual Diversity**: ProperPixelz enforces style variation to avoid photorealistic "AI fingerprints."
+- **Structural Variation**: ProperFuzion flags repetitive editing patterns and requires a human-led structural change.
+- **Transparency**: ProperSocialz mandates a disclosure check for synthetic photorealistic content.
 
 ## Key Functions
 - `handleCommand()`: Parses high-level user requests and maps them to specific app workflows.

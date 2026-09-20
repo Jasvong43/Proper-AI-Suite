@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProperOS — The Suite Orchestrator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+        }
+        .neon-border {
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .neon-border:focus-within, .neon-border:hover {
+            border-color: rgba(0, 243, 255, 0.6);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+        .neon-text {
+            color: #00f3ff;
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
+        }
+        .neon-button {
+            background: linear-gradient(45deg, #00f3ff, #00a3ff);
+            color: #020617;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        .neon-button:hover {
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        .glow-dot {
+            animation: pulse-glow 2s infinite;
+        }
+        .status-card {
+            transition: all 0.3s ease;
+        }
+        .status-card.active {
+            border-color: #00f3ff;
+            background: rgba(0, 243, 255, 0.05);
+        }
+        .tab-btn {
+            background: rgba(255,255,255,0.05);
+            color: #94a3b8;
+            transition: all 0.2s ease;
+        }
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        .tab-btn.active {
+            background: rgba(0, 243, 255, 0.1);
+            color: #00f3ff;
+            border-left: 3px solid #00f3ff;
+        }
+        .report-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+        .report-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Background Glows -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-900/20 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-900/20 blur-[120px]"></div>
+    </div>
+
+    <main class="flex-grow flex flex-col items-center px-4 py-12 relative">
+
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4 uppercase tracking-widest">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 glow-dot"></span>
+                Suite Central Orchestration
+            </div>
+            <h1 class="text-6xl md:text-8xl font-extrabold tracking-tight mb-4">
+                <span class="text-white">Proper</span><span class="neon-text">OS</span>
+            </h1>
+            <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                The Master Overseer. Coordinating the Proper AI Suite to turn raw ideas into digital empires.
+            </p>
+            <div class="mt-6 flex justify-center gap-4">
+                <button onclick="showView('command')" class="px-6 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-sm font-bold hover:bg-cyan-500/20 transition-all">Command Center</button>
+                <button onclick="showView('dashboard')" class="px-6 py-2 rounded-full bg-slate-800 border border-white/10 text-slate-400 text-sm font-bold hover:bg-slate-700 transition-all">Project Dashboard</button>
+            </div>
+        </div>
+
+        <!-- COMMAND VIEW -->
+        <div id="commandView" class="w-full flex flex-col items-center">
+            <div class="w-full max-w-4xl glass p-8 rounded-3xl neon-border mb-12">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Overseer Command
+                    </h2>
+                    <div id="systemTime" class="text-xs text-slate-500 font-mono"></div>
+                </div>
+
+                <div id="chatWindow" class="h-64 overflow-y-auto mb-6 space-y-4 p-4 bg-slate-900/50 rounded-2xl border border-white/5">
+                    <div class="flex gap-3">
+                        <span class="text-cyan-400 font-bold text-xs uppercase">Overseer:</span>
+                        <span class="text-slate-300 text-sm">Systems online. All Master Agents are synchronized. Ready for your command, Boss. What are we building today?</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <input type="text" id="commandInput"
+                        placeholder="e.g. 'Launch a new viral agency for AI Automation' or 'Check system status'..."
+                        class="flex-grow bg-slate-900/50 border border-white/10 rounded-xl px-4 py-4 outline-none text-slate-200 focus:border-cyan-500/50 transition-all">
+                    <button onclick="handleCommand()" class="neon-button px-8 py-4 rounded-xl font-bold text-lg">Execute</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="dashboardView" class="hidden w-full flex flex-col items-center">
+            <div class="w-full max-w-6xl flex flex-col gap-8">
+                <!-- Project Gallery -->
+                <div id="projectGallery" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Project cards will be injected here -->
+                </div>
+
+                <!-- Project Detail (The War Room) -->
+                <div id="projectDetail" class="hidden glass p-8 rounded-3xl neon-border flex flex-col lg:flex-row gap-8">
+                    <!-- Sidebar -->
+                    <div class="lg:w-1/4 flex flex-col gap-2">
+                        <button onclick="switchDetailTab('analytics')" class="tab-btn active text-left px-4 py-3 rounded-xl font-bold text-sm transition-all">Analytics</button>
+                        <button onclick="switchDetailTab('assets')" class="tab-btn text-left px-4 py-3 rounded-xl font-bold text-sm transition-all">Assets</button>
+                        <button onclick="switchDetailTab('links')" class="tab-btn text-left px-4 py-3 rounded-xl font-bold text-sm transition-all">Links</button>
+                        <button onclick="switchDetailTab('scripts')" class="tab-btn text-left px-4 py-3 rounded-xl font-bold text-sm transition-all">Scripts</button>
+                        <button onclick="switchDetailTab('status')" class="tab-btn text-left px-4 py-3 rounded-xl font-bold text-sm transition-all">Agent Status</button>
+                    </div>
+                    <!-- Content Area -->
+                    <div class="lg:w-3/4 bg-slate-900/40 rounded-2xl p-6 border border-white/5 min-h-[400px]">
+                        <div id="detailContent">
+                            <!-- Content dynamically injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agent Status Grid (Global) -->
+        <div id="globalStatusGrid" class="w-full max-w-6xl grid grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+            <!-- Viral -->
+            <div id="status-viral" class="status-card glass p-6 rounded-2xl neon-border flex flex-col">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-white font-bold">ProperViral</h3>
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                </div>
+                <p class="text-slate-500 text-xs uppercase font-bold mb-2">Master Ideation Agent</p>
+                <div class="text-slate-300 text-sm italic mb-4">Idle - Ready for analysis</div>
+                <div class="mt-auto text-[10px] text-cyan-400 font-mono">KB: v4.0 Updated</div>
+            </div>
+            <!-- Storyz -->
+            <div id="status-storyz" class="status-card glass p-6 rounded-2xl neon-border flex flex-col">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-white font-bold">ProperStoryz</h3>
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                </div>
+                <p class="text-slate-500 text-xs uppercase font-bold mb-2">Master Script Agent</p>
+                <div class="text-slate-300 text-sm italic mb-4">Idle - Ready for script</div>
+                <div class="mt-auto text-[10px] text-cyan-400 font-mono">KB: v4.1 Updated</div>
+            </div>
+            <!-- VoCaL -->
+            <div id="status-vocal" class="status-card glass p-6 rounded-2xl neon-border flex flex-col">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-white font-bold">ProperVoCaL</h3>
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                </div>
+                <p class="text-slate-500 text-xs uppercase font-bold mb-2">Master Voice Agent</p>
+                <div class="text-slate-300 text-sm italic mb-4">Idle - Ready for audio</div>
+                <div class="mt-auto text-[10px] text-cyan-400 font-mono">KB: v3.5 Updated</div>
+            </div>
+            <!-- Pixelz -->
+            <div id="status-pixelz" class="status-card glass p-6 rounded-2xl neon-border flex flex-col">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-white font-bold">ProperPixelz</h3>
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                </div>
+                <p class="text-slate-500 text-xs uppercase font-bold mb-2">Master Visual Agent</p>
+                <div class="text-slate-300 text-sm italic mb-4">Idle - Ready for generation</div>
+                <div class="mt-auto text-[10px] text-cyan-400 font-mono">KB: v4.2 Updated</div>
+            </div>
+            <!-- Fuzion -->
+            <div id="status-fuzion" class="status-card glass p-6 rounded-2xl neon-border flex flex-col">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-white font-bold">ProperFuzion</h3>
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                </div>
+                <p class="text-slate-500 text-xs uppercase font-bold mb-2">Master Director Agent</p>
+                <div class="text-slate-300 text-sm italic mb-4">Idle - Ready for edit</div>
+                <div class="mt-auto text-[10px] text-cyan-400 font-mono">KB: v3.8 Updated</div>
+            </div>
+            <!-- Socialz -->
+            <div id="status-socialz" class="status-card glass p-6 rounded-2xl neon-border flex flex-col">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-white font-bold">ProperSocialz</h3>
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                </div>
+                <p class="text-slate-500 text-xs uppercase font-bold mb-2">Master Social Agent</p>
+                <div class="text-slate-300 text-sm italic mb-4">Idle - Ready for calendar</div>
+                <div class="mt-auto text-[10px] text-cyan-400 font-mono">KB: v4.5 Updated</div>
+            </div>
+        </div>
+
+        <!-- Workflow Pipeline -->
+        <div id="pipelineView" class="hidden w-full max-w-6xl glass p-8 rounded-3xl neon-border mb-12">
+            <h2 class="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                <span class="w-2 h-6 bg-cyan-500 rounded-full"></span> Active Workflow Pipeline
+            </h2>
+            <div class="flex items-center justify-between gap-4 overflow-x-auto pb-4">
+                <!-- Dynamic Pipeline Steps -->
+                <div id="pipelineSteps" class="flex items-center gap-4 w-full"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-6 px-4 border-t border-white/5 glass text-center">
+        <p class="text-sm text-slate-500 font-medium">
+            ProperOS Orchestrator v1.0
+            <span class="mx-3 text-slate-700">·</span>
+            System Health: <span class="text-green-400 font-bold">Optimal</span>
+        </p>
+    </footer>
+
+    <script>
+        // CAMPAIGN STORE LOGIC
+        const CampaignStore = {
+            saveProject(project) {
+                const projects = this.getAllProjects();
+                projects.push(project);
+                localStorage.setItem('proper_os_projects', JSON.stringify(projects));
+            },
+            getAllProjects() {
+                const data = localStorage.getItem('proper_os_projects');
+                return data ? JSON.parse(data) : [];
+            },
+            getProject(id) {
+                return this.getAllProjects().find(p => p.id === id);
+            }
+        };
+
+        let currentProject = null;
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('systemTime').innerText = now.toUTCString();
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        function showView(view) {
+            document.getElementById('commandView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('globalStatusGrid').classList.add('hidden');
+
+            if (view === 'command') {
+                document.getElementById('commandView').classList.remove('hidden');
+                document.getElementById('globalStatusGrid').classList.remove('hidden');
+            } else if (view === 'dashboard') {
+                document.getElementById('dashboardView').classList.remove('hidden');
+                renderProjectGallery();
+            }
+        }
+
+        async function handleCommand() {
+            const input = document.getElementById('commandInput');
+            const chat = document.getElementById('chatWindow');
+            const cmd = input.value.trim();
+            if (!cmd) return;
+
+            chat.innerHTML += `
+                <div class="flex gap-3 justify-end text-right">
+                    <span class="text-slate-400 font-bold text-xs uppercase">Boss:</span>
+                    <span class="text-white text-sm">${cmd}</span>
+                </div>
+            `;
+            input.value = '';
+            chat.scrollTop = chat.scrollHeight;
+
+            await new Promise(r => setTimeout(r, 1000));
+
+            if (cmd.toLowerCase().includes('launch') || cmd.toLowerCase().includes('new')) {
+                const projectName = cmd.replace(/launch a new|new/i, '').trim();
+                triggerWorkflow(['Viral', 'Storyz', 'VoCaL', 'Pixelz', 'Fuzion', 'Socialz'], projectName);
+                appendOverseerMessage(\`Initiating FULL-SUITE Pipeline for: "${projectName}". Sequence: Viral $\rightarrow$ Storyz $\rightarrow$ VoCaL $\rightarrow$ Pixelz $\rightarrow$ Fuzion $\rightarrow$ Socialz. Activating Master Ideation Agent now.\`);
+            } else if (cmd.toLowerCase().includes('status')) {
+                appendOverseerMessage('All systems are operational. Knowledge bases are synchronized. Your specialized agents are on standby.');
+            } else {
+                appendOverseerMessage(\`I've processed your request regarding "${cmd}". I am analyzing the best suite-wide path to execute this. Stand by.\`);
+            }
+        }
+
+        function appendOverseerMessage(text) {
+            const chat = document.getElementById('chatWindow');
+            chat.innerHTML += `
+                <div class="flex gap-3">
+                    <span class="text-cyan-400 font-bold text-xs uppercase">Overseer:</span>
+                    <span class="text-slate-300 text-sm">${text}</span>
+                </div>
+            `;
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        async function triggerWorkflow(steps, projectName) {
+            const pipelineView = document.getElementById('pipelineView');
+            const stepsDiv = document.getElementById('pipelineSteps');
+            pipelineView.classList.remove('hidden');
+            stepsDiv.innerHTML = '';
+
+            const sessionRun = {
+                id: 'proj_' + Date.now(),
+                campaignName: projectName || 'Unnamed Campaign',
+                createdAt: new Date().toISOString(),
+                status: 'Running',
+                data: {}
+            };
+
+            for (let i = 0; i < steps.length; i++) {
+                const step = steps[i];
+                const stepEl = document.createElement('div');
+                stepEl.className = 'flex items-center gap-4';
+                stepEl.innerHTML = `
+                    <div class="glass p-4 rounded-xl neon-border text-center min-w-[120px] opacity-50">
+                        <span class="text-xs font-bold text-slate-500 uppercase block mb-1">Step ${i+1}</span>
+                        <span class="text-white font-bold">${step}</span>
+                    </div>
+                    ${i < steps.length - 1 ? '<div class="w-8 h-0.5 bg-slate-700"></div>' : ''}
+                `;
+                stepsDiv.appendChild(stepEl);
+
+                await new Promise(r => setTimeout(r, 1500));
+                stepEl.classList.remove('opacity-50');
+                stepEl.classList.add('neon-border');
+                if (i < steps.length - 1) {
+                    const line = stepEl.querySelector('div:last-child');
+                    if (line) line.classList.replace('bg-slate-700', 'bg-cyan-500');
+                }
+
+                sessionRun.data[step.toLowerCase()] = {
+                    status: 'Complete',
+                    timestamp: new Date().toISOString(),
+                    output: "Simulated high-fidelity output from Master " + step + " Agent."
+                };
+            }
+
+            sessionRun.status = 'Complete';
+            CampaignStore.saveProject(sessionRun);
+            appendOverseerMessage(\`Project "${projectName}" is complete! All assets have been archived in the Dashboard.\`);
+            showView('dashboard');
+        }
+
+        function renderProjectGallery() {
+            const gallery = document.getElementById('projectGallery');
+            const projects = CampaignStore.getAllProjects();
+            gallery.innerHTML = '';
+
+            if (projects.length === 0) {
+                gallery.innerHTML = '<div class="col-span-full text-center py-12 text-slate-500 italic">No campaigns found. Launch a new one in the Command Center.</div>';
+                return;
+            }
+
+            projects.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'glass p-6 rounded-2xl neon-border flex flex-col cursor-pointer hover:scale-105 transition-all';
+                card.onclick = () => openProjectDetail(p.id);
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-white font-bold">${p.campaignName}</h3>
+                        <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded border border-cyan-500/30 uppercase font-bold">${p.status}</span>
+                    </div>
+                    <p class="text-slate-500 text-xs mb-4">Created: ${new Date(p.createdAt).toLocaleDateString()}</p>
+                    <button class="w-full py-2 rounded-lg bg-white/5 hover:bg-cyan-500/10 border border-white/10 text-slate-400 hover:text-cyan-400 text-xs font-semibold transition-all">View Assets</button>
+                `;
+                gallery.appendChild(card);
+            });
+        }
+
+        function openProjectDetail(id) {
+            const project = CampaignStore.getProject(id);
+            if (!project) return;
+
+            currentProject = project;
+            document.getElementById('projectDetail').classList.remove('hidden');
+            document.getElementById('projectGallery').classList.add('hidden');
+            switchDetailTab('analytics');
+        }
+
+        function switchDetailTab(tab) {
+            const content = document.getElementById('detailContent');
+            const buttons = document.querySelectorAll('.tab-btn');
+
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.innerText.toLowerCase() === tab) btn.classList.add('active');
+            });
+
+            let html = '';
+            switch(tab) {
+                case 'analytics':
+                    html = `
+                        <div class="report-section visible space-y-6">
+                            <h3 class="text-xl font-bold text-white mb-4">Campaign Analytics</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="glass p-4 rounded-xl border border-white/10 text-center">
+                                    <span class="text-xs text-slate-500 uppercase block mb-1">Virality Score</span>
+                                    <span class="text-3xl font-bold neon-text">98/100</span>
+                                </div>
+                                <div class="glass p-4 rounded-xl border border-white/10 text-center">
+                                    <span class="text-xs text-slate-500 uppercase block mb-1">Predicted CTR</span>
+                                    <span class="text-3xl font-bold neon-text">15.7%</span>
+                                </div>
+                                <div class="glass p-4 rounded-xl border border-white/10 text-center">
+                                    <span class="text-xs text-slate-500 uppercase block mb-1">Niche Strength</span>
+                                    <span class="text-3xl font-bold neon-text">High</span>
+                                </div>
+                            </div>
+                        </div>`;
+                    break;
+                case 'assets':
+                    html = `
+                        <div class="report-section visible space-y-6">
+                            <h3 class="text-xl font-bold text-white mb-4">Asset Vault</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                <div class="glass p-2 rounded-xl border border-white/10 aspect-square flex flex-col items-center justify-center text-center p-4">
+                                    <div class="w-full h-full bg-slate-800 rounded-lg mb-2 flex items-center justify-center text-slate-600">Thumbnail</div>
+                                    <span class="text-[10px] text-slate-400">Golden Key.png</span>
+                                </div>
+                                <div class="glass p-2 rounded-xl border border-white/10 aspect-video flex flex-col items-center justify-center text-center p-4">
+                                    <div class="w-full h-full bg-slate-800 rounded-lg mb-2 flex items-center justify-center text-slate-600">Video</div>
+                                    <span class="text-[10px] text-slate-400">Final_Cut.mp4</span>
+                                </div>
+                                <div class="glass p-2 rounded-xl border border-white/10 aspect-square flex flex-col items-center justify-center text-center p-4">
+                                    <div class="w-full h-full bg-slate-800 rounded-lg mb-2 flex items-center justify-center text-slate-600">B-Roll</div>
+                                    <span class="text-[10px] text-slate-400">Interface_Neon.mp4</span>
+                                </div>
+                            </div>
+                        </div>`;
+                    break;
+                case 'links':
+                    html = `
+                        <div class="report-section visible space-y-6">
+                            <h3 class="text-xl font-bold text-white mb-4">Conversion Links</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center p-4 glass rounded-xl border border-white/10">
+                                    <span class="text-sm text-slate-300">Affiliate Link</span>
+                                    <button class="text-xs neon-text font-bold hover:underline">Copy Link</button>
+                                </div>
+                                <div class="flex justify-between items-center p-4 glass rounded-xl border border-white/10">
+                                    <span class="text-sm text-slate-300">TikTok Profile Link</span>
+                                    <button class="text-xs neon-text font-bold hover:underline">Copy Link</button>
+                                </div>
+                            </div>
+                        </div>`;
+                    break;
+                case 'scripts':
+                    html = `
+                        <div class="report-section visible space-y-6">
+                            <h3 class="text-xl font-bold text-white mb-4">Script Archive</h3>
+                            <div class="glass p-6 rounded-xl border border-white/10 text-slate-300 text-sm leading-relaxed whitespace-pre-wrap font-mono">
+                                ${currentProject.data.storyz ? currentProject.data.storyz.output : 'No scripts found for this project.'}
+                            </div>
+                        </div>`;
+                    break;
+                case 'status':
+                    html = `
+                        <div class="report-section visible space-y-6">
+                            <h3 class="text-xl font-bold text-white mb-4">Agent Heartbeats</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                ${['Viral', 'Storyz', 'VoCaL', 'Pixelz', 'Fuzion', 'Socialz'].map(agent => `
+                                    <div class="glass p-3 rounded-xl border border-white/10 flex items-center gap-3">
+                                        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                        <span class="text-xs text-slate-300 font-bold">${agent}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>`;
+                    break;
+            }
+            content.innerHTML = html;
+        }
+
+        function showView(view) {
+            document.getElementById('commandView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('globalStatusGrid').classList.add('hidden');
+
+            if (view === 'command') {
+                document.getElementById('commandView').classList.remove('hidden');
+                document.getElementById('globalStatusGrid').classList.remove('hidden');
+            } else if (view === 'dashboard') {
+                document.getElementById('dashboardView').classList.remove('hidden');
+                renderProjectGallery();
+            }
+        }
+
+        // Initial view
+        showView('command');
+    </script>
+</body>
+</html>
