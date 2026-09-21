@@ -228,36 +228,86 @@
             if (!cmd) return;
 
             // Append user message
-            chat.innerHTML += \`
+            chat.innerHTML += `
                 <div class="flex gap-3 justify-end text-right">
                     <span class="text-slate-400 font-bold text-xs uppercase">Boss:</span>
                     <span class="text-white text-sm">${cmd}</span>
                 </div>
-            \`;
+            `;
             input.value = '';
             chat.scrollTop = chat.scrollHeight;
 
-            // Overseer processing
-            await new Promise(r => setTimeout(r, 1000));
+            try {
+                if (cmd.toLowerCase().includes('launch') || cmd.toLowerCase().includes('new')) {
+                    const response = await fetch('http://localhost:3000/api/execute', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ command: cmd, type: 'workflow' })
+                    });
+                    const data = await response.json();
 
-            if (cmd.toLowerCase().includes('launch') || cmd.toLowerCase().includes('new')) {
-                triggerWorkflow(['Viral', 'Storyz', 'VoCaL', 'Pixelz', 'Fuzion', 'Socialz']);
-                appendOverseerMessage(\`Initiating FULL-SUITE Pipeline for: "${cmd}". Sequence: Viral $\rightarrow$ Storyz $\rightarrow$ VoCaL $\rightarrow$ Pixelz $\rightarrow$ Fuzion $\rightarrow$ Socialz. Activating Master Ideation Agent now.\`);
-            } else if (cmd.toLowerCase().includes('status')) {
-                appendOverseerMessage('All systems are operational. Knowledge bases are synchronized. Your specialized agents are on standby.');
-            } else {
-                appendOverseerMessage(\`I've processed your request regarding "${cmd}". I am analyzing the best suite-wide path to execute this. Stand by.\`);
+                    if (data.success) {
+                        triggerWorkflow(data.pipeline);
+                        appendOverseerMessage(`${data.message}. Activating Master Ideation Agent now.`);
+                        updateAgentStatus();
+                    }
+                } else if (cmd.toLowerCase().includes('status')) {
+                    const response = await fetch('http://localhost:3000/api/status');
+                    const data = await response.json();
+                    appendOverseerMessage('All systems are operational. Knowledge bases are synchronized. Your specialized agents are on standby.');
+                    updateAgentStatus();
+                } else if (cmd.toLowerCase().includes('sync')) {
+                    const response = await fetch('http://localhost:3000/api/sync', { method: 'POST' });
+                    const data = await response.json();
+                    appendOverseerMessage(data.message);
+                    updateAgentStatus();
+                } else {
+                    const response = await fetch('http://localhost:3000/api/execute', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ command: cmd, type: 'general' })
+                    });
+                    const data = await response.json();
+                    appendOverseerMessage(data.message);
+                }
+            } catch (e) {
+                appendOverseerMessage('Error connecting to ProperOS Backend. Please ensure the server is running.');
+            }
+        }
+
+        async function updateAgentStatus() {
+            try {
+                const response = await fetch('http://localhost:3000/api/status');
+                const agents = await response.json();
+
+                Object.keys(agents).forEach(key => {
+                    const card = document.getElementById(`status-${key}`);
+                    if (card) {
+                        const statusText = card.querySelector('.text-slate-300');
+                        const kbText = card.querySelector('.text-cyan-400');
+                        statusText.innerText = agents[key].status;
+                        kbText.innerText = `KB: ${agents[key].kbVersion} Updated`;
+
+                        if (agents[key].status !== 'Idle') {
+                            card.classList.add('active');
+                        } else {
+                            card.classList.remove('active');
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error('Failed to update agent status', e);
             }
         }
 
         function appendOverseerMessage(text) {
             const chat = document.getElementById('chatWindow');
-            chat.innerHTML += \`
+            chat.innerHTML += `
                 <div class="flex gap-3">
                     <span class="text-cyan-400 font-bold text-xs uppercase">Overseer:</span>
                     <span class="text-slate-300 text-sm">${text}</span>
                 </div>
-            \`;
+            `;
             chat.scrollTop = chat.scrollHeight;
         }
 
@@ -270,13 +320,13 @@
             steps.forEach((step, i) => {
                 const stepEl = document.createElement('div');
                 stepEl.className = 'flex items-center gap-4';
-                stepEl.innerHTML = \`
+                stepEl.innerHTML = `
                     <div class="glass p-4 rounded-xl neon-border text-center min-w-[120px]">
-                        <span class="text-xs font-bold text-slate-500 uppercase block mb-1">Step \${i+1}</span>
-                        <span class="text-white font-bold">\${step}</span>
+                        <span class="text-xs font-bold text-slate-500 uppercase block mb-1">Step ${i+1}</span>
+                        <span class="text-white font-bold">${step}</span>
                     </div>
-                    \${i < steps.length - 1 ? '<div class="w-8 h-0.5 bg-cyan-500/30"></div>' : ''}
-                \`;
+                    ${i < steps.length - 1 ? '<div class="w-8 h-0.5 bg-cyan-500/30"></div>' : ''}
+                `;
                 stepsDiv.appendChild(stepEl);
             });
         }
