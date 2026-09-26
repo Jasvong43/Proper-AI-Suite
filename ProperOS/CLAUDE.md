@@ -43,10 +43,19 @@ To avoid "AI Slop" flags and YouTube channel bans, the suite enforces three mand
 - **Transparency**: ProperSocialz mandates a disclosure check for synthetic photorealistic content.
 
 ## Key Functions
-- `handleCommand()`: Parses high-level user requests and maps them to specific app workflows.
-- `triggerWorkflow(pipeline)`: Automates the sequence of apps.
+- `handleCommand()`: Parses high-level user requests, initializes projects in `CampaignStore`, and maps them to specific app workflows.
+- `triggerWorkflow(pipeline, projectId)`: Automates the sequence of apps and persists incremental agent output to the `CampaignStore`.
 - `updateAgentStatus()`: Updates the status cards based on the latest activity in the suite.
 - `syncKnowledgeBases()`: (Simulated) Triggers the weekly refinement process for niche agents.
+
+## Campaign Store Schema
+`localStorage` key: `PROPER_OS_CAMPAIGNS`
+- `Project` Object:
+    - `id`: UUID (e.g., `proj_1726...`)
+    - `name`: Campaign name
+    - `createdAt`: ISO Timestamp
+    - `status`: 'Draft' | 'Running' | 'Complete'
+    - `agents`: Map of agent outputs (`Viral`, `Storyz`, `VoCaL`, `Pixelz`, `Fuzion`, `Socialz`) containing results and `lastRun` timestamps.
 
 ## Project Structure
 - `index.html`: All logic, styles, and HTML for the orchestration layer.
