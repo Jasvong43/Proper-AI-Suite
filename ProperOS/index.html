@@ -613,6 +613,32 @@
             }
         }
 
+        async function updateAgentStatus() {
+            try {
+                const response = await fetch('http://localhost:3000/api/status');
+                const agents = await response.json();
+
+                Object.keys(agents).forEach(key => {
+                    const card = document.getElementById(`status-${key}`);
+                    if (card) {
+                        const statusText = card.querySelector('.text-slate-300');
+                        const kbText = card.querySelector('.text-cyan-400');
+                        statusText.innerText = agents[key].status;
+                        kbText.innerText = `KB: ${agents[key].kbVersion} Updated`;
+
+                        if (agents[key].status !== 'Idle') {
+                            card.classList.add('active');
+                        } else {
+                            card.classList.remove('active');
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error('Failed to update agent status', e);
+>>>>>>> origin/main
+            }
+        }
+
         function appendOverseerMessage(text) {
             const chat = document.getElementById('chatWindow');
             chat.innerHTML += `
