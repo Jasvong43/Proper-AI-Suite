@@ -161,3 +161,35 @@ Rebuilt and restarted on `wrangler dev`. Verified end-to-end:
 - `npx tsc --noEmit` → **exit 0**
 
 Build output: `_worker.js` 39.34 kB (Vite) → direct Wrangler bundle, no dist step.
+
+### Deploy attempt — BLOCKED (plan gate, not a code failure)
+
+`gsk hosted deploy` → `code: membership_required`
+
+```
+Hosted deployment is only available for Plus-or-higher members.
+result: { project_id: 3cc043a3-..., membership_required: "plus_or_higher" }
+retryable: false
+```
+
+This is an **account-plan gate**, not a build or config problem. The worker bundle
+validated cleanly immediately before it:
+
+- `npx wrangler deploy --dry-run` → **97.33 KiB total / 25.51 KiB gzip**
+- D1 binding `DB` resolved
+- `npx tsc --noEmit` → exit 0
+- All 8 apps + launcher + API verified on `wrangler dev` locally
+
+The deployment itself is code-complete and deploy-ready. Nothing was retried —
+the gate is `retryable: false` and retrying before an upgrade would just burn time.
+
+**Standing options (pick one):**
+1. **Upgrade to Plus** → hosted deploy works unchanged, no code edits needed.
+2. **BYOK** → deploy the same Worker/Pages bundle to Bruce's own Cloudflare account
+   via API token (`cf-byok-deploy`). Requires a Cloudflare API token in the Deploy panel.
+   Note: the hosted-only constraints (no KV, no cron) would then relax.
+3. **Local only** → suite already runs fully at `localhost:3000`.
+
+**Not yet done because it was gated:** creating the production D1, binding the real
+`database_id`, and publishing. `wrangler.jsonc` still carries the placeholder
+`database_id: "00000000-..."`, which the hosted pipeline rewrites on provision.
