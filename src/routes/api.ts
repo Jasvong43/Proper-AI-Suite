@@ -11,10 +11,81 @@
  *                         anywhere but the original dev machine.
  */
 import { Hono } from 'hono'
+import type { MiddlewareHandler } from 'hono'
 
-type Bindings = { DB: D1Database }
+type Bindings = { DB: D1Database; API_KEY?: string }
 
 export const api = new Hono<{ Bindings: Bindings }>()
+
+// ---------------------------------------------------------------------------
+// Write authentication
+// ---------------------------------------------------------------------------
+// Fail-closed gate on every mutating route. No API_KEY configured => writes are
+// refused outright (503), never silently allowed. Reads the key from the
+// `x-api-key` header, or `Authorization: Bearer <key>`.
+//
+// The key lives in `.dev.vars` locally (gitignored) and as a secret binding
+// anywhere else. It is never inlined into client code or bundled assets.
+
+const MIN_KEY_LENGTH = 16
+
+/** Constant-time string comparison — avoids leaking the key via timing. */
+function safeEqual(a: string, b: string): boolean {
+  const enc = new TextEncoder()
+  const ab = enc.encode(a)
+  const bb = enc.encode(b)
+  // Length is not secret (it's fixed by the operator), content is.
+  if (ab.length !== bb.length) return false
+  let diff = 0
+  for (let i = 0; i < ab.length; i++) diff |= ab[i] ^ bb[i]
+  return diff === 0
+}
+
+function presentedKey(header: (n: string) => string | undefined): string | undefined {
+  const direct = header('x-api-key')
+  if (direct) return direct.trim()
+
+  const auth = header('authorization')
+  if (auth?.toLowerCase().startsWith('bearer ')) return auth.slice(7).trim()
+
+  return undefined
+}
+
+const requireWriteAuth: MiddlewareHandler<{ Bindings: Bindings }> = async (c, next) => {
+  const configured = c.env.API_KEY?.trim()
+
+  // Fail closed: an unconfigured gate denies, it does not open.
+  if (!configured || configured.length < MIN_KEY_LENGTH) {
+    return c.json(
+      {
+        success: false,
+        error: 'write_api_disabled',
+        message:
+          'API_KEY is not configured (or is shorter than 16 chars). Write endpoints are disabled by design.',
+      },
+      503,
+    )
+  }
+
+  const provided = presentedKey((n) => c.req.header(n))
+
+  if (!provided) {
+    return c.json(
+      {
+        success: false,
+        error: 'unauthorized',
+        message: 'Missing API key. Send it as the x-api-key header or an Authorization: Bearer token.',
+      },
+      401,
+    )
+  }
+
+  if (!safeEqual(provided, configured)) {
+    return c.json({ success: false, error: 'unauthorized', message: 'Invalid API key.' }, 401)
+  }
+
+  await next()
+}
 
 /** Pipeline order used by the orchestrator. */
 const PIPELINE = ['Viral', 'Storyz', 'VoCaL', 'Pixelz', 'Fuzion', 'Socialz'] as const
@@ -162,7 +233,7 @@ api.get('/status', async (c) => {
 // ---------------------------------------------------------------------------
 // POST /api/execute  { command, type }
 // ---------------------------------------------------------------------------
-api.post('/execute', async (c) => {
+api.post('/execute', requireWriteAuth, async (c) => {
   const db = c.env.DB
   await ensureSchema(db)
 
@@ -210,7 +281,7 @@ api.post('/execute', async (c) => {
 // ---------------------------------------------------------------------------
 // POST /api/sync  — touch every agent, log a sync marker per agent
 // ---------------------------------------------------------------------------
-api.post('/sync', async (c) => {
+api.post('/sync', requireWriteAuth, async (c) => {
   const db = c.env.DB
   await ensureSchema(db)
 
@@ -254,7 +325,7 @@ api.get('/projects', async (c) => {
 // ---------------------------------------------------------------------------
 // PATCH /api/projects/:id  { status }
 // ---------------------------------------------------------------------------
-api.patch('/projects/:id', async (c) => {
+api.patch('/projects/:id', requireWriteAuth, async (c) => {
   const db = c.env.DB
   await ensureSchema(db)
 

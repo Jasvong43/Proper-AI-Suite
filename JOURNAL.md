@@ -193,3 +193,77 @@ the gate is `retryable: false` and retrying before an upgrade would just burn ti
 **Not yet done because it was gated:** creating the production D1, binding the real
 `database_id`, and publishing. `wrangler.jsonc` still carries the placeholder
 `database_id: "00000000-..."`, which the hosted pipeline rewrites on provision.
+
+## 2026-10-24 — Session 1, final: write gating (local-only mode)
+
+**Decision:** Bruce chose **stay local + gate it**. Hosted deploy remains blocked by the
+`plus_or_higher` plan gate, so the site is served from `wrangler dev` on port 3000.
+
+### Why the gate is in-app, not hosted access rules
+
+Hosted route-admission rules are enforced by the platform Dispatcher and **only go live
+through a hosted deploy** — which is plan-gated. With no hosted deployment, there is no
+Dispatcher in the path, so access rules cannot protect anything here. That leaves
+application-level auth as the only real gate for local mode. No `AccessRules*` calls were
+made: authoring rules that can never be published would be theatre.
+
+### What was added — `requireWriteAuth` (`src/routes/api.ts`)
+
+A fail-closed middleware on every mutating route.
+
+| Route | Method | Gated |
+|---|---|---|
+| `/api/execute` | POST | ✅ |
+| `/api/sync` | POST | ✅ |
+| `/api/projects/:id` | PATCH | ✅ |
+| `/api/health` `/status` `/stats` `/projects` `/kb` | GET | open (launcher + ProperOS status poll need them) |
+
+Design decisions:
+
+- **Fails closed.** No `API_KEY` configured (or under 16 chars) → `503 write_api_disabled`,
+  never "allow because unconfigured". An unconfigured gate denies.
+- **Constant-time compare.** `safeEqual()` XOR-accumulates over equal-length byte arrays so
+  response timing doesn't leak the key. Length is fixed by the operator, so a length
+  mismatch short-circuit is safe.
+- **Two accepted shapes.** `x-api-key: <key>` or `Authorization: Bearer <key>`.
+- **Distinct failures.** Missing key → `401 unauthorized` ("Missing API key…"), wrong key →
+  `401 unauthorized` ("Invalid API key."), unconfigured → `503`. Operator can tell them apart.
+- **Key never in client code.** Reads from `c.env.API_KEY` only. Never inlined into the HTML
+  shell or bundled assets, so it isn't visible to anyone loading `/apps/*`.
+
+### Key handling
+
+- Generated with `openssl rand -hex 32` → **64 hex chars**.
+- Stored in `.dev.vars` (gitignored at `.gitignore:20`), perms `600`.
+- Never echoed to logs or commit messages. Wrangler reports it as `API_KEY: "(hidden)"`.
+- Verified absent from tracked files and from all `.ts`/`.mjs`/`.json`/`.html` sources.
+
+### Verification (all against the live local worker)
+
+**Reads stayed open:** `/api/health` `/status` `/stats` `/projects` `/kb` → all `200`.
+
+**Writes denied:**
+```
+POST  /api/execute          no key    -> 401
+POST  /api/sync             no key    -> 401
+PATCH /api/projects/x       no key    -> 401
+POST  /api/execute          wrong key -> 401
+```
+
+**Writes allowed with valid key:**
+```
+POST /api/execute  x-api-key: <key>          -> 200  campaignName:"gated test"
+POST /api/sync     Authorization: Bearer <key> -> 200  synced: 7
+```
+
+`npx tsc --noEmit` → exit 0.
+
+### Residual risk (documented, not hidden)
+
+- **The gate is only as strong as key distribution.** Anything that embeds the key in
+  browser-delivered JS defeats it. Currently nothing does — no frontend calls the write
+  routes. If the ProperOS UI is later wired to `/api/execute`, it must proxy through a
+  server route or prompt for the key; it must not ship it in the bundle.
+- **Local only.** `wrangler dev` is not a production server. No uptime, no TLS, no public URL.
+- **Reads are fully public.** `/api/kb` and `/api/projects` expose campaign names and KB
+  content to anyone who can reach the port. Fine on a loopback dev box; not fine if exposed.
