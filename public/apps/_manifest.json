@@ -1,0 +1,42 @@
+[
+  {
+    "dir": "ProperFlux",
+    "title": "ProperFlux — Master Trading & Web3 Agent",
+    "localhostFixes": 0
+  },
+  {
+    "dir": "ProperFuzion",
+    "title": "ProperFuzion — AI Video Producer",
+    "localhostFixes": 0
+  },
+  {
+    "dir": "ProperOS",
+    "title": "ProperOS — The Suite Orchestrator",
+    "localhostFixes": 1
+  },
+  {
+    "dir": "ProperPixelz",
+    "title": "ProperPixelz — AI Visual Engine",
+    "localhostFixes": 0
+  },
+  {
+    "dir": "ProperSocialz",
+    "title": "ProperSocialz — Master Social Media Agent",
+    "localhostFixes": 0
+  },
+  {
+    "dir": "ProperStory",
+    "title": "ProperStoryz — Viral Script Architect",
+    "localhostFixes": 0
+  },
+  {
+    "dir": "ProperViral",
+    "title": "ProperViral — Master YouTube Ideation Agent",
+    "localhostFixes": 0
+  },
+  {
+    "dir": "ProperVoCaL",
+    "title": "ProperVoCaL — Master Voice Architect",
+    "localhostFixes": 0
+  }
+]

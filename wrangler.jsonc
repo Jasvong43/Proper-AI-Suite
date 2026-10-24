@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "proper-ai-suite",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-12-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Static assets: assets-first serving. A request that matches a file under
+  // public/ is served directly without invoking the Worker; everything else
+  // (the launcher at "/", and all of /api/*) falls through to Hono.
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+
+  // Exactly one D1 binding — the hosted pipeline auto-provisions it and
+  // rejects multiples. No KV / cron / DO / queues: unsupported on hosted.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "proper-ai-suite-production",
+      "database_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ]
+}

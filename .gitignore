@@ -9,6 +9,13 @@ dist/
 .mf/
 .output/
 
+# Generated at build time by scripts/sync-apps.mjs from the app folders at
+# repo root (source of truth: /Proper*/index.html).
+# NOTE: intentionally NOT ignored. The hosted deploy pipeline may package from
+# the git snapshot rather than the working tree; if these were ignored the
+# deploy would ship a launcher with no apps behind it.
+# Regenerate any time with: npm run sync:apps
+
 # Runtime / local state
 .dev.vars
 .env

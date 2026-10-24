@@ -1,0 +1,30 @@
+{
+  "name": "proper-ai-suite",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Proper AI Suite — 8 specialized AI agents behind one orchestrator, on the edge.",
+  "scripts": {
+    "sync:apps": "node scripts/sync-apps.mjs",
+    "build": "npm run sync:apps",
+    "dev": "npm run sync:apps && wrangler dev --ip 0.0.0.0 --port 3000",
+    "dev:sandbox": "wrangler dev --ip 0.0.0.0 --port 3000",
+    "deploy": "npm run sync:apps && wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply proper-ai-suite-production --local",
+    "db:migrate:prod": "wrangler d1 migrations apply proper-ai-suite-production --remote",
+    "db:seed": "wrangler d1 execute proper-ai-suite-production --local --file=./seed.sql",
+    "db:reset": "rm -rf .wrangler/state/v3/d1 && npm run db:migrate:local && npm run db:seed",
+    "db:console:local": "wrangler d1 execute proper-ai-suite-production --local",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "clean-port": "fuser -k 3000/tcp 2>/dev/null || true",
+    "test": "curl -s http://localhost:3000/api/health"
+  },
+  "dependencies": {
+    "hono": "^4.6.14"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241218.0",
+    "typescript": "^5.7.2",
+    "wrangler": "^3.99.0"
+  }
+}
