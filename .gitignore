@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+.wrangler/
+.mf/
+.output/
+
+# Runtime / local state
+.dev.vars
+.env
+.env.*
+!.env.example
+*.log
+logs/
+pids/
+*.pid
+*.seed
+*.pid.lock
+.pm2/
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+
+# Backups
+*.backup
+*.bak
+*.tar.gz
+*.zip
+
+# Stray shell-escape artifacts (e.g. "index.html`")
+*`
